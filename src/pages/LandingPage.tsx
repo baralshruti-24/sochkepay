@@ -81,15 +81,15 @@ export const LandingPage: React.FC = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 text-xs font-bold text-slate-600 border-t border-slate-200/80">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Device-Local Biometric</span>
+                  <span>{t.landing.trust1}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Zero Secret PIN Storage</span>
+                  <span>{t.landing.trust2}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>Hindi & English Voice Alerts</span>
+                  <span>{t.dashboard.voiceAlerts}</span>
                 </div>
               </div>
             </div>
@@ -135,13 +135,6 @@ export const LandingPage: React.FC = () => {
                   </span>
                 </div>
 
-                <button
-                  onClick={() => navigateTo('pay')}
-                  className="w-full py-2.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <span>Test this scenario in Simulator</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
               </div>
             </div>
           </div>

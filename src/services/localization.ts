@@ -62,6 +62,7 @@ export interface TranslationDictionary {
     todayStats: string;
     protectedCount: string;
     suspiciousPrevented: string;
+    voiceAlerts: string;
     recentActivity: string;
     viewAll: string;
     quickActions: string;
@@ -247,7 +248,7 @@ export const translations: Record<Language, TranslationDictionary> = {
   en: {
     brand: {
       name: 'SochKe Pay',
-      tagline: 'Think Before You Pay. Understand Before You Trust.',
+      tagline: 'Ruko. Socho. Surakshit Raho.',
       subTagline: 'Ruko. Socho. Surakshit Raho.',
       philosophy: "Fraudsters don't always hack the payment system. They manipulate the person using it.",
     },
@@ -288,7 +289,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       step2Title: '2. Why could it be risky?',
       step2Desc: 'We evaluate contextual signals like active calls, screen sharing, and timing rather than a single metric.',
       step3Title: '3. What should I do now?',
-      step3Desc: 'We provide clear Hindi/English voice guidance and adaptive friction with zero financial jargon.',
+      step3Desc: 'We provide clear Hindi, English, and Odia voice guidance and adaptive friction with zero financial jargon.',
       step4Title: '4. What did I learn?',
       step4Desc: 'Micro-learning embedded right after payments teaches you UPI safety habits for a lifetime.',
       trustTitle: 'Our Privacy-First Architectural Promises',
@@ -306,6 +307,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       todayStats: 'Activity Today',
       protectedCount: 'Payments Checked',
       suspiciousPrevented: 'High-Risk Interceptions',
+      voiceAlerts: 'Hindi, English & Odia Voice Alerts',
       recentActivity: 'Recent Protected Activity',
       viewAll: 'View All Logs',
       quickActions: 'Quick Safety Actions',
@@ -489,7 +491,7 @@ export const translations: Record<Language, TranslationDictionary> = {
   hi: {
     brand: {
       name: 'सोचके Pay',
-      tagline: 'सोचके भेजो • समझके भरोसा करो',
+      tagline: 'रुकिए। सोचिए। सुरक्षित रहिए।',
       subTagline: 'रुकिए। सोचिए। सुरक्षित रहिए।',
       philosophy: 'धोखेबाज हमेशा सिस्टम को नहीं हैक करते, बल्कि वो इंसान की घबराहट और भरोसे का गलत फायदा उठाते हैं।',
     },
@@ -548,6 +550,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       todayStats: 'आज की सुरक्षा गतिविधि',
       protectedCount: 'जांचे गए पेमेंट',
       suspiciousPrevented: 'रोके गए संदिग्ध प्रयास',
+      voiceAlerts: 'हिंदी, अंग्रेजी और ओड़िया में आवाज़ की चेतावनी',
       recentActivity: 'हाल के सुरक्षित लेन-देन',
       viewAll: 'सभी लेन-देन देखें',
       quickActions: 'त्वरित सुरक्षा विकल्प',
@@ -732,7 +735,7 @@ export const translations: Record<Language, TranslationDictionary> = {
     // Odia structure with clean authentic fallbacks
     brand: {
       name: 'SochKe Pay',
-      tagline: 'ଭାବିଚିନ୍ତି ପଠାନ୍ତୁ • ବୁଝିବିଚାରି ବିଶ୍ୱାସ କରନ୍ତୁ',
+      tagline: 'ଅଟକନ୍ତୁ। ଭାବନ୍ତୁ। ସୁରକ୍ଷିତ ରୁହନ୍ତୁ।',
       subTagline: 'ଅଟକନ୍ତୁ। ଭାବନ୍ତୁ। ସୁରକ୍ଷିତ ରୁହନ୍ତୁ।',
       philosophy: 'ଠକମାନେ ସବୁବେଳେ ସିଷ୍ଟମ ହ୍ୟାକ୍ କରନ୍ତି ନାହିଁ, ସେମାନେ ଲୋକଙ୍କ ଭୟ ଏବଂ ବିଶ୍ୱାସର ଭୁଲ ଫାଇଦା ଉଠାନ୍ତି।',
     },
@@ -791,6 +794,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       todayStats: 'ଆଜିର ସୁରକ୍ଷା କାର୍ଯ୍ୟକଳାପ',
       protectedCount: 'ଯାଞ୍ଚ ହୋଇଥିବା ପେମେଣ୍ଟ',
       suspiciousPrevented: 'ଅଟକାଯାଇଥିବା ସନ୍ଦିଗ୍ଧ ଚେଷ୍ଟା',
+      voiceAlerts: 'ହିନ୍ଦୀ, ଇଂରାଜୀ ଏବଂ ଓଡ଼ିଆ ସ୍ୱର ଚେତାବନୀ',
       recentActivity: 'ନିକଟ ଅତୀତର ସୁରକ୍ଷିତ କାରବାର',
       viewAll: 'ସମସ୍ତ କାରବାର ଦେଖନ୍ତୁ',
       quickActions: 'ଶୀଘ୍ର ସୁରକ୍ଷା ବିକଳ୍ପ',

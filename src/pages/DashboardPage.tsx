@@ -129,6 +129,10 @@ export const DashboardPage: React.FC = () => {
               <span className="text-slate-500">Biometrics & SIM</span>
               <span className="text-emerald-600 font-bold">Face + Voice + Touch Bound</span>
             </div>
+            <div className="flex items-center justify-between py-1">
+              <span className="text-slate-500">Voice Alerts</span>
+              <span className="text-sky-700 font-bold">{t.dashboard.voiceAlerts}</span>
+            </div>
           </div>
 
           <button
@@ -164,12 +168,20 @@ export const DashboardPage: React.FC = () => {
           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-700">Family Guardian</span>
-              <span className="text-[10px] font-black uppercase text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-md">
-                Active
+              <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
+                user.guardian?.enabled
+                  ? 'text-emerald-700 bg-emerald-100'
+                  : 'text-slate-600 bg-slate-200'
+              }`}>
+                {user.guardian?.enabled ? 'On' : 'Off'}
               </span>
             </div>
             <p className="text-xs text-slate-600 font-medium">
-              Guardian: <strong>Ananya (Daughter)</strong> assists with payments above ₹15,000.
+              {user.guardian?.enabled ? (
+                <>Guardian: <strong>{user.guardian.name} ({user.guardian.relationship})</strong> assists with payments above ₹{user.guardian.approvalThreshold.toLocaleString('en-IN')}.</>
+              ) : (
+                'Family Mode is disabled. Guardian approval is not active.'
+              )}
             </p>
           </div>
         </div>

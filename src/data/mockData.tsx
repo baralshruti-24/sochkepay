@@ -35,7 +35,7 @@ export const initialUserProfile: UserProfile = {
     phoneMasked: '+91 98112 •••••',
     status: 'VERIFIED',
     approvalThreshold: 15000,
-    enabled: true,
+    enabled: false,
   },
   baseline: {
     averagePaymentAmount: 2800,

@@ -98,7 +98,11 @@ export const GuardianPage: React.FC = () => {
               <input
                 type="checkbox"
                 checked={isEnabled}
-                onChange={(e) => setIsEnabled(e.target.checked)}
+                onChange={(e) => {
+                  const enabled = e.target.checked;
+                  setIsEnabled(enabled);
+                  updateGuardian({ enabled });
+                }}
                 className="w-5 h-5 accent-purple-600 rounded-md cursor-pointer"
               />
             </div>
@@ -203,8 +207,24 @@ export const GuardianPage: React.FC = () => {
                 <span>Verification Request from Shruti</span>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                "Shruti is about to send ₹25,000 to an unknown account (rakesh897@okaxis). We paused it for review."
+              <div className="space-y-1 text-xs text-slate-300 leading-relaxed font-medium">
+                <p><strong className="text-white">Payment:</strong> ₹25,000 to Rakesh Kumar</p>
+                <p className="text-[11px] text-slate-400 font-mono">rakesh897@okaxis</p>
+              </div>
+
+              <div className="rounded-xl bg-slate-900/70 border border-slate-700 p-3 space-y-2">
+                <p className="text-[11px] font-black uppercase tracking-wide text-amber-300">
+                  Why verification is needed
+                </p>
+                <ul className="space-y-1.5 text-[11px] text-slate-300">
+                  <li className="flex gap-2"><span className="text-rose-400">•</span><span>Recipient is new and not in Shruti&apos;s trusted history.</span></li>
+                  <li className="flex gap-2"><span className="text-rose-400">•</span><span>Amount is unusually high compared with the normal payment pattern.</span></li>
+                  <li className="flex gap-2"><span className="text-rose-400">•</span><span>Payment was initiated while the recipient context is still unverified.</span></li>
+                </ul>
+              </div>
+
+              <p className="text-[11px] text-amber-200 font-bold">
+                Payment paused until a guardian reviews these signals.
               </p>
 
               <div className="grid grid-cols-2 gap-2 pt-1">

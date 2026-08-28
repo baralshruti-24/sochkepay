@@ -20,7 +20,7 @@ export const Footer: React.FC = () => {
               </span>
             </div>
             <p className="text-slate-300 font-medium text-base">
-              {t.brand.tagline}
+              {t.brand.subTagline}
             </p>
             <p className="text-slate-400 text-xs leading-relaxed max-w-lg">
               {t.brand.philosophy} Designed as a human-friendly safety intelligence layer between user psychology and instant payment authorization.
@@ -121,12 +121,11 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div>
-            © 2026 SochKe Pay. सोचके भेजो • समझके भरोसा करो.
+            © 2026 SochKe Pay.
           </div>
           <div className="flex items-center gap-6">
             <span>Privacy-First Architecture</span>
             <span>WCAG 2.1 AA Accessible</span>
-            <span>Ruko. Socho. Surakshit Raho.</span>
           </div>
         </div>
       </div>

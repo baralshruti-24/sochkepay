@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { AgeRange, Language, UserProfile, BiometricEnrollmentDetails } from '../types';
 import { familiarImageOptions } from '../data/mockData';
@@ -47,6 +47,9 @@ interface LocalizedStrings {
   mobileLabel: string;
   mobileSub: string;
   ageRangeLabel: string;
+  seniorGuideTitle: string;
+  seniorGuideBody: string;
+  seniorGuideButton: string;
   seniorShieldActive: string;
   age1825: string;
   age1825Sub: string;
@@ -75,6 +78,7 @@ interface LocalizedStrings {
   voiceSub: string;
   voiceEnrolled: string;
   voicePromptLabel: string;
+  voicePrivacy: string;
   voiceListening: string;
   btnRecordVoice: string;
   familiarTitle: string;
@@ -143,6 +147,9 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     mobileLabel: 'Mobile Number (UPI Linked SIM)',
     mobileSub: 'Hardware SIM Binding Active',
     ageRangeLabel: 'Age Range (Determines Adaptive Cognitive Friction & Guardian Assistance)',
+    seniorGuideTitle: 'Senior-friendly safety guide is on',
+    seniorGuideBody: 'Take your time. We will show larger prompts, explain each step clearly, and remind you that your UPI PIN sends money out.',
+    seniorGuideButton: 'Hear Safety Guide',
     seniorShieldActive: 'Senior Shield Mode Activated',
     age1825: '18 - 25 Years',
     age1825Sub: 'Youth & Students',
@@ -172,6 +179,7 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     voiceSub: 'Vocal tract harmonics capture',
     voiceEnrolled: 'Voice Enrolled',
     voicePromptLabel: 'Speak This Passphrase:',
+    voicePrivacy: 'Your audio is processed on this device only. We do not store or upload the recording.',
     voiceListening: 'Listening & Validating Acoustics...',
     btnRecordVoice: 'Record Voice Passphrase Sample',
     familiarTitle: '3. Familiar Picture Safety Secret (Cognitive Auth)',
@@ -240,6 +248,9 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     mobileLabel: 'मोबाइल नंबर (UPI से जुड़ा सिम)',
     mobileSub: 'हार्डवेयर सिम बाइंडिंग सक्रिय',
     ageRangeLabel: 'आयु वर्ग (इसके आधार पर सुरक्षा एवं परिवार सहायता तय होती है)',
+    seniorGuideTitle: 'वरिष्ठ नागरिक सुरक्षा गाइड सक्रिय है',
+    seniorGuideBody: 'आराम से करें। हम बड़े निर्देश दिखाएंगे, हर चरण को सरल भाषा में समझाएंगे और याद दिलाएंगे कि यूपीआई पिन डालने से पैसे बाहर जाते हैं।',
+    seniorGuideButton: 'सुरक्षा गाइड सुनें',
     seniorShieldActive: 'वरिष्ठ नागरिक सुरक्षा कवच सक्रिय',
     age1825: '18 - 25 वर्ष',
     age1825Sub: 'युवा एवं छात्र',
@@ -268,6 +279,7 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     voiceSub: 'आवाज़ की ध्वनि तरंगों की पहचान',
     voiceEnrolled: 'आवाज़ दर्ज हो गई',
     voicePromptLabel: 'यह सुरक्षा वाक्य बोलें:',
+    voicePrivacy: 'आपकी आवाज़ की जांच इसी डिवाइस पर होती है। रिकॉर्डिंग न तो सेव होती है और न अपलोड।',
     voiceListening: 'आवाज़ की जांच हो रही है...',
     btnRecordVoice: 'आवाज़ का नमूना रिकॉर्ड करें',
     familiarTitle: '3. परिचित चित्र सुरक्षा पहचान (संज्ञानात्मक सुरक्षा)',
@@ -335,6 +347,9 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     mobileLabel: 'ମୋବାଇଲ୍ ନମ୍ବର (UPI ସଂଯୁକ୍ତ ସିମ୍)',
     mobileSub: 'ହାର୍ଡୱେର୍ ସିମ୍ ବାଇଣ୍ଡିଂ ସକ୍ରିୟ',
     ageRangeLabel: 'ବୟସ ସୀମା (ଏହା ସୁରକ୍ଷା ଓ ପରିବାର ସହାୟତା ସ୍ଥିର କରେ)',
+    seniorGuideTitle: 'ବରିଷ୍ଠ ନାଗରିକ ସୁରକ୍ଷା ଗାଇଡ୍ ସକ୍ରିୟ',
+    seniorGuideBody: 'ଧୀରେ ଧୀରେ କରନ୍ତୁ। ଆମେ ବଡ଼ ନିର୍ଦ୍ଦେଶ ଦେବୁ, ପ୍ରତ୍ୟେକ ପଦକ୍ଷେପ ବୁଝାଇବୁ ଏବଂ UPI PIN ଦେଲେ ଟଙ୍କା ବାହାରକୁ ଯାଏ ବୋଲି ମନେ ପକାଇବୁ।',
+    seniorGuideButton: 'ସୁରକ୍ଷା ଗାଇଡ୍ ଶୁଣନ୍ତୁ',
     seniorShieldActive: 'ବରିଷ୍ଠ ନାଗରିକ ସୁରକ୍ଷା ସକ୍ରିୟ',
     age1825: '୧୮ - ୨୫ ବର୍ଷ',
     age1825Sub: 'ଯୁବକ ଓ ଛାତ୍ରଛାତ୍ରୀ',
@@ -363,6 +378,7 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     voiceSub: 'ସ୍ୱର ତରଙ୍ଗ ସଂରକ୍ଷଣ',
     voiceEnrolled: 'ଭଏସ୍ ପଞ୍ଜୀକୃତ ହେଲା',
     voicePromptLabel: 'ଏହି ସୁରକ୍ଷା ବାକ୍ୟ କୁହନ୍ତୁ:',
+    voicePrivacy: 'ଆପଣଙ୍କ ସ୍ୱର କେବଳ ଏହି ଡିଭାଇସରେ ଯାଞ୍ଚ ହୁଏ। ରେକର୍ଡିଂ ସେଭ୍ ବା ଅପଲୋଡ୍ ହୁଏ ନାହିଁ।',
     voiceListening: 'ସ୍ୱର ଯାଞ୍ଚ କରାଯାଉଛି...',
     btnRecordVoice: 'ଭଏସ୍ ନମୁନା ରେକର୍ଡ କରନ୍ତୁ',
     familiarTitle: '୩. ପରିଚିତ ଚିତ୍ର ସୁରକ୍ଷା ରହସ୍ୟ',
@@ -437,18 +453,21 @@ export const RegisterPage: React.FC = () => {
   const [faceVectorSignature, setFaceVectorSignature] = useState<string>('VEC_FACE_CLEAN_USER_99');
   const [faceLivenessProgress, setFaceLivenessProgress] = useState<number>(100);
 
-  const [voiceEnrolled, setVoiceEnrolled] = useState<boolean>(true);
+  const [voiceEnrolled, setVoiceEnrolled] = useState<boolean>(false);
   const [isRecordingVoice, setIsRecordingVoice] = useState<boolean>(false);
   const [voiceHarmonicsSignature, setVoiceHarmonicsSignature] = useState<string>('VOICE_HARMONICS_CLEAN_USER');
+  const voiceRecorderRef = useRef<MediaRecorder | null>(null);
+  const voiceStreamRef = useRef<MediaStream | null>(null);
   const [voicePassphrase, setVoicePassphrase] = useState<string>(
     preferredLang === 'hi'
-      ? 'सोचके भेजो, समझके भरोसा करो'
+      ? 'रुकिए। सोचिए। सुरक्षित रहिए।'
       : preferredLang === 'or'
-      ? 'ଭାବିଚିନ୍ତି ପଠାନ୍ତୁ, ସୁରକ୍ଷିତ ରୁହନ୍ତୁ'
-      : 'Soch Ke Pay Suraksha Sweekar Hai'
+      ? 'ଅଟକନ୍ତୁ। ଭାବନ୍ତୁ। ସୁରକ୍ଷିତ ରୁହନ୍ତୁ।'
+      : 'Ruko. Socho. Surakshit Raho.'
   );
 
   const [selectedFamiliarImage, setSelectedFamiliarImage] = useState<string>(user.familiarImageId || 'house');
+  const [customFamiliarImage, setCustomFamiliarImage] = useState<string | null>(null);
   const [familiarSecretKey, setFamiliarSecretKey] = useState<string>(
     preferredLang === 'hi' ? 'बचपन का घर' : preferredLang === 'or' ? 'ପିଲାଦିନର ଘର' : 'Sweet Home'
   );
@@ -475,11 +494,11 @@ export const RegisterPage: React.FC = () => {
   // Sync voice passphrase when language changes
   useEffect(() => {
     if (preferredLang === 'hi') {
-      setVoicePassphrase('सोचके भेजो, समझके भरोसा करो');
+      setVoicePassphrase('रुकिए। सोचिए। सुरक्षित रहिए।');
     } else if (preferredLang === 'or') {
-      setVoicePassphrase('ଭାବିଚିନ୍ତି ପଠାନ୍ତୁ, ସୁରକ୍ଷିତ ରୁହନ୍ତୁ');
+      setVoicePassphrase('ଅଟକନ୍ତୁ। ଭାବନ୍ତୁ। ସୁରକ୍ଷିତ ରୁହନ୍ତୁ।');
     } else {
-      setVoicePassphrase('Soch Ke Pay Suraksha Sweekar Hai');
+      setVoicePassphrase('Ruko. Socho. Surakshit Raho.');
     }
   }, [preferredLang]);
 
@@ -574,14 +593,47 @@ export const RegisterPage: React.FC = () => {
     }, 350);
   };
 
-  // Simulate Voice Passphrase Recording
-  const handleRecordVoice = () => {
-    setIsRecordingVoice(true);
-    playVoiceWarning(voicePassphrase);
-    setTimeout(() => {
+  const handleRecordVoice = async () => {
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      window.alert('Voice recording is not supported in this browser.');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      voiceStreamRef.current = stream;
+      voiceRecorderRef.current = recorder;
+      setIsRecordingVoice(true);
+      recorder.ondataavailable = () => undefined;
+      recorder.onstop = () => {
+        stream.getTracks().forEach(track => track.stop());
+        voiceStreamRef.current = null;
+        voiceRecorderRef.current = null;
+        setIsRecordingVoice(false);
+        setVoiceEnrolled(true);
+        setVoiceHarmonicsSignature(`VOICE_HARMONICS_LOCAL_${Date.now().toString(36).toUpperCase()}`);
+      };
+      recorder.start();
+      window.setTimeout(() => {
+        if (recorder.state === 'recording') recorder.stop();
+      }, 2800);
+    } catch {
       setIsRecordingVoice(false);
-      setVoiceEnrolled(true);
-    }, 2800);
+      window.alert('Microphone permission is required to record your passphrase.');
+    }
+  };
+
+  const handleCustomImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCustomFamiliarImage(reader.result as string);
+      setSelectedFamiliarImage('custom');
+    };
+    reader.readAsDataURL(file);
   };
 
   // Simulate Hardware Fingerprint Scanning
@@ -821,9 +873,9 @@ export const RegisterPage: React.FC = () => {
               </label>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { code: 'hi', label: 'हिंदी (Hindi)', sub: 'सोचके भेजो' },
-                  { code: 'en', label: 'English', sub: 'Think & Send' },
-                  { code: 'or', label: 'ଓଡ଼ିଆ (Odia)', sub: 'ଭାବିଚିନ୍ତି ପଠାନ୍ତୁ' },
+                  { code: 'hi', label: 'हिंदी (Hindi)', sub: 'रुकिए। सोचिए। सुरक्षित रहिए।' },
+                  { code: 'en', label: 'English', sub: 'Ruko. Socho. Surakshit Raho.' },
+                  { code: 'or', label: 'ଓଡ଼ିଆ (Odia)', sub: 'ଅଟକନ୍ତୁ। ଭାବନ୍ତୁ। ସୁରକ୍ଷିତ ରୁହନ୍ତୁ।' },
                 ].map((lang) => (
                   <button
                     key={lang.code}
@@ -1061,6 +1113,9 @@ export const RegisterPage: React.FC = () => {
                 <p className="text-sm font-black text-slate-900 font-serif italic">
                   "{voicePassphrase}"
                 </p>
+                <p className="text-[11px] text-slate-500 leading-relaxed">
+                  {loc.voicePrivacy}
+                </p>
 
                 {isRecordingVoice && (
                   <div className="flex items-center justify-center gap-1 py-1">
@@ -1079,7 +1134,7 @@ export const RegisterPage: React.FC = () => {
                 disabled={isRecordingVoice}
                 className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-transform active:scale-95"
               >
-                <Volume2 className="w-3.5 h-3.5" />
+                <Mic className="w-3.5 h-3.5" />
                 <span>{isRecordingVoice ? loc.voiceListening : loc.btnRecordVoice}</span>
               </button>
             </div>
@@ -1104,7 +1159,6 @@ export const RegisterPage: React.FC = () => {
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 {familiarImageOptions.map((opt) => (
                   <button
-                    key={opt.id}
                     type="button"
                     onClick={() => setSelectedFamiliarImage(opt.id)}
                     className={`p-3 rounded-2xl text-center border transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
@@ -1118,6 +1172,20 @@ export const RegisterPage: React.FC = () => {
                     <span className="text-[10px] text-slate-500 line-clamp-1">{opt.descriptionKey}</span>
                   </button>
                 ))}
+                <label className={`p-3 rounded-2xl text-center border transition-all cursor-pointer flex flex-col items-center gap-1.5 ${
+                  selectedFamiliarImage === 'custom'
+                    ? 'border-indigo-600 bg-indigo-50/80 text-indigo-950 ring-2 ring-indigo-500/20 shadow-xs'
+                    : 'border-dashed border-slate-300 hover:border-indigo-400 bg-white text-slate-700'
+                }`}>
+                  {customFamiliarImage ? (
+                    <img src={customFamiliarImage} alt="Your familiar picture" className="w-12 h-12 rounded-xl object-cover" />
+                  ) : (
+                    <ImageIcon className="w-8 h-8 text-indigo-500" />
+                  )}
+                  <span className="text-xs font-black">Add Your Image</span>
+                  <span className="text-[10px] text-slate-500">Stored on this device</span>
+                  <input type="file" accept="image/*" onChange={handleCustomImageUpload} className="sr-only" />
+                </label>
               </div>
 
               <div className="space-y-1.5">
@@ -1140,6 +1208,24 @@ export const RegisterPage: React.FC = () => {
                     <Fingerprint className="w-4 h-4" />
                   </div>
                   <div>
+
+                  {ageRange === '60+' && (
+                    <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Volume2 className="w-4 h-4 text-amber-700" />
+                        <h4 className="text-sm font-black">{loc.seniorGuideTitle}</h4>
+                      </div>
+                      <p className="text-xs leading-relaxed">{loc.seniorGuideBody}</p>
+                      <button
+                        type="button"
+                        onClick={() => playVoiceWarning(loc.seniorGuideBody)}
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black cursor-pointer"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        {loc.seniorGuideButton}
+                      </button>
+                    </div>
+                  )}
                     <h3 className="text-sm font-black text-slate-900">{loc.hardwareTitle}</h3>
                     <p className="text-[11px] text-slate-500">{loc.hardwareSub}</p>
                   </div>

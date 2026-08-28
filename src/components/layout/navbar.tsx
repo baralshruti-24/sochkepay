@@ -99,7 +99,7 @@ export const Navbar: React.FC = () => {
                 </span>
               </div>
               <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 tracking-normal font-sans">
-                {language === 'hi' ? 'सोचके भेजो • समझके भरोसा करो' : 'Ruko. Socho. Surakshit Raho.'}
+                {t.brand.subTagline}
               </span>
             </div>
           </div>
