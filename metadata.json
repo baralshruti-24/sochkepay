@@ -1,0 +1,11 @@
+{
+  "name": "SochKe Pay",
+  "description": "Real-time, explainable UPI payment safety and contextual fraud prevention layer for India — Ruko. Socho. Surakshit Raho.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
