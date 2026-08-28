@@ -3,7 +3,7 @@ import confetti from 'canvas-confetti';
 import { Transaction } from '../types';
 import { useApp } from '../context/AppContext';
 import { SochuMascot } from '../mascot/SochuMascot';
-import { CheckCircle2, ArrowRight, BookOpen, ShieldCheck, Sparkles } from 'lucide-react';
+import { CheckCircle2, ArrowRight, BookOpen, ShieldCheck, ShieldAlert, ExternalLink, Phone } from 'lucide-react';
 
 interface PaymentSuccessModalProps {
   transaction: Transaction;
@@ -39,6 +39,10 @@ export const PaymentSuccessModal: React.FC<PaymentSuccessModalProps> = ({ transa
         return t.learn.pinRuleDesc;
     }
   };
+
+  const wasRiskyPaymentCompleted =
+    transaction.status === 'SUCCESS' &&
+    (transaction.riskAssessment?.riskLevel === 'HIGH' || transaction.riskAssessment?.riskLevel === 'CRITICAL');
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
@@ -93,6 +97,39 @@ export const PaymentSuccessModal: React.FC<PaymentSuccessModalProps> = ({ transa
             {getEducationalText()}
           </p>
         </div>
+
+        {wasRiskyPaymentCompleted && (
+          <div className="bg-rose-50 rounded-2xl p-4 border border-rose-200 text-left space-y-3">
+            <div className="flex items-start gap-2">
+              <ShieldAlert className="w-5 h-5 text-rose-600 flex-shrink-0" />
+              <div>
+                <h3 className="text-sm font-black text-rose-950">Concerned about this payment?</h3>
+                <p className="text-xs text-rose-800 mt-1 leading-relaxed">
+                  This {transaction.riskAssessment?.riskLevel.toLowerCase()}-risk payment was completed. Report it immediately if you believe it was fraudulent.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <a
+                href="https://cybercrime.gov.in/"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 text-[11px] font-black"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Cyber Crime Portal
+              </a>
+              <a
+                href="tel:1930"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white px-3 py-2 text-[11px] font-black"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                Call 1930
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">

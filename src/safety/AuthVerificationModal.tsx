@@ -71,6 +71,7 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
   // Familiar Image State
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [familiarError, setFamiliarError] = useState(false);
+  const [familiarSecret, setFamiliarSecret] = useState('');
 
   // Voice Affirmation State
   const [isVoiceRecording, setIsVoiceRecording] = useState(false);
@@ -167,7 +168,8 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
   const handleFamiliarSelect = (id: string) => {
     setSelectedImageId(id);
     const expectedId = user.familiarImageId || 'house';
-    if (id === expectedId) {
+    const expectedSecret = user.biometricEnrollment?.familiarImageSecretKey?.trim().toLowerCase();
+    if (id === expectedId && (!expectedSecret || familiarSecret.trim().toLowerCase() === expectedSecret)) {
       setFamiliarError(false);
       setCompletedFactors(prev => ({ ...prev, familiar_image: true }));
 
@@ -600,7 +602,29 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
                   </button>
                 );
               })}
+              {user.biometricEnrollment?.familiarImageData && (
+                <button
+                  onClick={() => handleFamiliarSelect('custom')}
+                  className={`flex flex-col items-center p-3 rounded-2xl border-2 transition-all cursor-pointer ${
+                    selectedImageId === 'custom' ? 'bg-emerald-50 border-emerald-500 shadow-md' : 'bg-slate-50 border-dashed border-slate-200 hover:border-amber-400'
+                  }`}
+                >
+                  <img src={user.biometricEnrollment.familiarImageData} alt="Your enrolled familiar picture" className="w-14 h-14 rounded-xl object-cover mb-1" />
+                  <span className="text-[10px] font-bold text-slate-700">Your Picture</span>
+                </button>
+              )}
             </div>
+
+            <label className="block space-y-1">
+              <span className="text-[11px] font-bold text-slate-700">Enter your private memory word</span>
+              <input
+                type="password"
+                value={familiarSecret}
+                onChange={(event) => setFamiliarSecret(event.target.value)}
+                placeholder="Your secret word"
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold focus:outline-hidden focus:ring-2 focus:ring-amber-500"
+              />
+            </label>
 
             {familiarError && (
               <p className="text-xs font-bold text-rose-600 text-center animate-shake">

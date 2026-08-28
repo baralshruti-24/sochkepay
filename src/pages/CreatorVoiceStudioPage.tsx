@@ -14,6 +14,7 @@ import {
   Zap,
   Plus,
   Upload,
+  Trash2,
   Sparkles,
 } from 'lucide-react';
 
@@ -104,7 +105,7 @@ export const INITIAL_CREATOR_PROMPTS: CreatorVoicePrompt[] = [
     },
   },
   {
-    id: 'WARN_UPFRONT_LOAN',
+    id: 'SCENARIO_UPFRONT_LOAN_FEE',
     category: 'Loan Processing Fee Fraud',
     scenarioTitle: '🟠 Fake Loan Upfront Processing Fee',
     riskBadge: 'HIGH',
@@ -116,7 +117,7 @@ export const INITIAL_CREATOR_PROMPTS: CreatorVoicePrompt[] = [
     },
   },
   {
-    id: 'WARN_REWARD_LOTTERY',
+    id: 'SCENARIO_PAYING_FOR_REWARD',
     category: 'Lottery & Cash Prize Scam',
     scenarioTitle: '🔴 Lottery & Prize Advance Fee Scam',
     riskBadge: 'CRITICAL',
@@ -154,7 +155,7 @@ export const INITIAL_CREATOR_PROMPTS: CreatorVoicePrompt[] = [
 ];
 
 export const CreatorVoiceStudioPage: React.FC = () => {
-  const { language, setLanguage, saveCreatorRecording, creatorRecordings } = useApp();
+  const { language, setLanguage, saveCreatorRecording, deleteCreatorRecording, creatorRecordings } = useApp();
 
   const [promptsList, setPromptsList] = useState<CreatorVoicePrompt[]>(INITIAL_CREATOR_PROMPTS);
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
@@ -270,6 +271,15 @@ export const CreatorVoiceStudioPage: React.FC = () => {
       console.warn('Playback error:', err);
       setIsPlayingAudio(false);
     });
+  };
+
+  const deleteCurrentRecording = () => {
+    if (!currentRecording) return;
+    if (audioPlayerRef.current) audioPlayerRef.current.pause();
+    deleteCreatorRecording(currentKey);
+    setIsPlayingAudio(false);
+    setSuccessToast('Audio clip deleted from this scenario and language.');
+    setTimeout(() => setSuccessToast(null), 3000);
   };
 
   const handleAddNewPrompt = (e: React.FormEvent) => {
@@ -699,6 +709,14 @@ export const CreatorVoiceStudioPage: React.FC = () => {
                 >
                   <Play className="w-4 h-4 fill-white" />
                   <span>{isPlayingAudio ? 'Playing...' : 'Test Playback'}</span>
+                </button>
+                <button
+                  onClick={deleteCurrentRecording}
+                  className="px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-rose-950 text-rose-300 border border-slate-700 hover:border-rose-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  title="Delete this recording"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete</span>
                 </button>
               </div>
             )}

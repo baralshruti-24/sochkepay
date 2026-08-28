@@ -68,6 +68,7 @@ interface AppContextType {
   stopVoiceWarning: () => void;
   creatorRecordings: Record<string, { url: string; duration: number; time: string }>;
   saveCreatorRecording: (key: string, url: string, duration: number) => void;
+  deleteCreatorRecording: (key: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -98,6 +99,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     }));
+  };
+
+  const deleteCreatorRecording = (key: string) => {
+    const recording = creatorRecordings[key];
+    if (recording?.url.startsWith('blob:')) URL.revokeObjectURL(recording.url);
+    setCreatorRecordings(prev => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   };
 
   const setLanguage = (lang: Language) => {
@@ -227,7 +238,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const fallbackText = customScript || activeRiskAssessment.voiceScript[language] || activeRiskAssessment.voiceScript.en;
           audioSpeech.speak(fallbackText, language);
         };
-        audio.play();
+        audio.play().catch(() => {
+          if (activeAudioPlayerRef.current === audio) {
+            activeAudioPlayerRef.current = null;
+          }
+          const fallbackText = customScript || activeRiskAssessment.voiceScript[language] || activeRiskAssessment.voiceScript.en;
+          audioSpeech.speak(fallbackText, language);
+        });
         return;
       } catch (err) {
         console.warn('Creator audio playback error, falling back to synthesis:', err);
@@ -255,7 +272,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       note: currentNote,
       context: { ...currentContext },
       riskAssessment: activeRiskAssessment,
-      status: activeRiskAssessment.riskLevel === 'CRITICAL' && user.guardian?.enabled && currentAmount >= (user.guardian?.approvalThreshold || 15000)
+      status: user.guardian?.enabled && currentAmount >= (user.guardian?.approvalThreshold || 15000)
         ? 'PENDING_GUARDIAN'
         : 'SUCCESS',
       authUsed: authMethod,
@@ -366,6 +383,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         stopVoiceWarning,
         creatorRecordings,
         saveCreatorRecording,
+        deleteCreatorRecording,
       }}
     >
       {children}

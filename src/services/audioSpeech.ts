@@ -4,6 +4,7 @@ class AudioSpeechService {
   private synth: SpeechSynthesis | null = null;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
   private isSpeakingCallback: ((speaking: boolean) => void) | null = null;
+  private requestId = 0;
 
   constructor() {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -22,6 +23,7 @@ class AudioSpeechService {
     }
 
     this.stop();
+    const requestId = ++this.requestId;
 
     const utterance = new SpeechSynthesisUtterance(text);
     this.currentUtterance = utterance;
@@ -32,7 +34,7 @@ class AudioSpeechService {
       utterance.rate = 0.92; // slightly deliberate for elders
       utterance.pitch = 1.0;
     } else if (language === 'or') {
-      utterance.lang = 'hi-IN'; // Fallback to Indian accent if Odia TTS voice is unavailable
+      utterance.lang = 'or-IN';
       utterance.rate = 0.9;
     } else {
       utterance.lang = 'en-IN';
@@ -45,11 +47,10 @@ class AudioSpeechService {
       const preferred = voices.find(
         v =>
           (language === 'hi' && (v.lang.includes('hi') || v.lang.includes('hi_IN') || v.name.includes('Hindi') || v.name.includes('Kalpana') || v.name.includes('Lekha'))) ||
+          (language === 'or' && (v.lang.toLowerCase().startsWith('or') || v.name.toLowerCase().includes('odia'))) ||
           (language === 'en' && (v.lang === 'en-IN' || v.name.includes('India') || v.name.includes('Ravi') || v.name.includes('Heera')))
       );
-      if (preferred) {
-        utterance.voice = preferred;
-      }
+      if (preferred) utterance.voice = preferred;
     }
 
     utterance.onstart = () => {
@@ -57,12 +58,15 @@ class AudioSpeechService {
     };
 
     utterance.onend = () => {
-      if (this.isSpeakingCallback) this.isSpeakingCallback(false);
-      this.currentUtterance = null;
+      if (requestId === this.requestId) {
+        if (this.isSpeakingCallback) this.isSpeakingCallback(false);
+        this.currentUtterance = null;
+      }
     };
 
-    utterance.onerror = (e) => {
-      console.error('Speech synthesis error:', e);
+    utterance.onerror = (event) => {
+      if (event.error === 'canceled' || event.error === 'interrupted' || requestId !== this.requestId) return;
+      console.warn('Speech synthesis unavailable for this browser voice:', event.error);
       if (this.isSpeakingCallback) this.isSpeakingCallback(false);
       this.currentUtterance = null;
     };
@@ -75,6 +79,7 @@ class AudioSpeechService {
   }
 
   public stop() {
+    this.requestId += 1;
     if (this.synth) {
       this.synth.cancel();
     }

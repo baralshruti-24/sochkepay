@@ -227,6 +227,12 @@ export interface TranslationDictionary {
     refundScamDesc: string;
     digitalArrestTitle: string;
     digitalArrestDesc: string;
+    olxScamTitle: string;
+    olxScamDesc: string;
+    officialScamTitle: string;
+    officialScamDesc: string;
+    rewardScamTitle: string;
+    rewardScamDesc: string;
     customerCareTitle: string;
     customerCareDesc: string;
   };
@@ -472,6 +478,12 @@ export const translations: Record<Language, TranslationDictionary> = {
       refundScamDesc: 'Scammers pose as Swiggy, Amazon, or bank support. They tell you: "We are sending a refund, please open GPay and accept the request." That request is a COLLECT request taking your money!',
       digitalArrestTitle: 'The "Digital Arrest" Extortion Scam',
       digitalArrestDesc: 'Imposters dress as police or CBI over video calls, claiming your Aadhaar or parcel was found with illegal contraband. They demand money to "clear your name". Real police NEVER demand UPI payments!',
+      olxScamTitle: 'OLX Marketplace Advance Scam',
+      olxScamDesc: 'A fake buyer may pose as an Army officer and send a QR code or collect request for an advance. Never scan a QR code or enter your PIN to receive money.',
+      officialScamTitle: 'Fake Government Official Scam',
+      officialScamDesc: 'Scammers impersonate police, customs, tax, or government officials and threaten arrest or penalties. Government officials do not demand UPI payments over calls or chats.',
+      rewardScamTitle: 'Pay to Receive a Reward Scam',
+      rewardScamDesc: 'A lottery or cashback message asks for a processing fee or tax first. Genuine rewards never require you to pay money or share your UPI PIN.',
       customerCareTitle: 'Fake Google Search Numbers',
       customerCareDesc: 'Never trust phone numbers found on random Google search or Instagram for courier/airline customer care. Always use the official verified app.',
     },
@@ -715,6 +727,12 @@ export const translations: Record<Language, TranslationDictionary> = {
       refundScamDesc: 'धोखेबाज बैंक या स्विगी कस्टमर केयर बनकर कहते हैं कि रिफंड के लिए गूगल पे खोलें और कलेक्ट रिक्वेस्ट स्वीकार करें। वह कलेक्ट रिक्वेस्ट आपके पैसे निकालने के लिए होती है!',
       digitalArrestTitle: 'फर्जी "डिजिटल अरेस्ट" का डर',
       digitalArrestDesc: 'धोखेबाज पुलिस या सीबीआई की वर्दी में वीडियो कॉल करके गिरफ्तारी का डर दिखाते हैं और पैसे ट्रांसफर मांगते हैं। असली पुलिस कभी फोन पर यूपीआई से पैसे नहीं मांगती!',
+      olxScamTitle: 'OLX पर एडवांस पेमेंट घोटाला',
+      olxScamDesc: 'फर्जी खरीदार खुद को फौजी अधिकारी बताकर QR कोड या कलेक्ट रिक्वेस्ट भेज सकता है। पैसे पाने के लिए QR स्कैन या पिन दर्ज न करें।',
+      officialScamTitle: 'फर्जी सरकारी अधिकारी का घोटाला',
+      officialScamDesc: 'धोखेबाज पुलिस, कस्टम, टैक्स या सरकारी अधिकारी बनकर गिरफ्तारी और जुर्माने का डर दिखाते हैं। सरकारी अधिकारी कॉल या चैट पर यूपीआई भुगतान नहीं मांगते।',
+      rewardScamTitle: 'इनाम पाने के लिए पैसे मांगना',
+      rewardScamDesc: 'लॉटरी या कैशबैक का संदेश पहले प्रोसेसिंग फीस या टैक्स मांगता है। असली इनाम के लिए पैसे या यूपीआई पिन की जरूरत नहीं होती।',
       customerCareTitle: 'गूगल सर्च पर फर्जी नंबर',
       customerCareDesc: 'कूरियर या एयरलाइन का कस्टमर केयर नंबर कभी भी गूगल सर्च से न उठाएं। हमेशा आधिकारिक ऐप का ही इस्तेमाल करें।',
     },
@@ -959,6 +977,12 @@ export const translations: Record<Language, TranslationDictionary> = {
       refundScamDesc: 'ଠକମାନେ ରିଫଣ୍ଡ ଆଳରେ ଟଙ୍କା କାଟିନିଅନ୍ତି।',
       digitalArrestTitle: 'ଡିଜିଟାଲ ଆରେଷ୍ଟ ଭୟ',
       digitalArrestDesc: 'ପୋଲିସ କେବେହେଲେ ଫୋନ୍ ରେ UPI ପେମେଣ୍ଟ ମାଗନ୍ତି ନାହିଁ।',
+      olxScamTitle: 'OLX ଆଡଭାନ୍ସ QR ଠକେଇ',
+      olxScamDesc: 'ନକଲି କ୍ରେତା ଆର୍ମି ଅଫିସର ଭାବେ QR କୋଡ୍ କିମ୍ବା କଲେକ୍ଟ ରିକ୍ୱେଷ୍ଟ ପଠାଇପାରେ। ଟଙ୍କା ପାଇବାକୁ QR ସ୍କାନ୍ କିମ୍ବା PIN ଦିଅନ୍ତୁ ନାହିଁ।',
+      officialScamTitle: 'ନକଲି ସରକାରୀ ଅଧିକାରୀ ଠକେଇ',
+      officialScamDesc: 'ଠକମାନେ ପୋଲିସ୍, କଷ୍ଟମ୍ସ, ଟ୍ୟାକ୍ସ କିମ୍ବା ସରକାରୀ ଅଧିକାରୀ ଭାବେ ଭୟ ଦିଅନ୍ତି। ସରକାରୀ ଅଧିକାରୀ ଫୋନ୍ କିମ୍ବା ଚାଟ୍ ରେ UPI ପେମେଣ୍ଟ ମାଗନ୍ତି ନାହିଁ।',
+      rewardScamTitle: 'ପୁରସ୍କାର ପାଇଁ ଟଙ୍କା ଦେବା ଠକେଇ',
+      rewardScamDesc: 'ଲଟେରୀ କିମ୍ବା କ୍ୟାଶବ୍ୟାକ୍ ପାଇଁ ପ୍ରଥମେ ଫି ବା ଟ୍ୟାକ୍ସ ମାଗାଯାଏ। ପ୍ରକୃତ ପୁରସ୍କାର ପାଇଁ ଟଙ୍କା କିମ୍ବା UPI PIN ଦରକାର ହୁଏ ନାହିଁ।',
       customerCareTitle: 'ଗୁଗଲ ରେ ମିଥ୍ୟା ନମ୍ବର',
       customerCareDesc: 'ସର୍ବଦା ଅଫିସିଆଲ୍ ଆପ୍ ରୁ ନମ୍ବର ନିଅନ୍ତୁ।',
     },

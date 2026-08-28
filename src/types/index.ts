@@ -143,6 +143,7 @@ export interface BiometricEnrollmentDetails {
   voicePhraseText?: string;
   voiceSampleDuration?: number;
   familiarImageId: string;
+  familiarImageData?: string;
   familiarImageSecretKey?: string;
   fingerprintHardwareBound: boolean;
   secureEnclaveKeyId?: string;

@@ -33,12 +33,13 @@ export const Navbar: React.FC = () => {
   } = useApp();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCompactMenuOpen, setIsCompactMenuOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
   const navItems = [
-    { id: 'landing', label: t.nav.home, icon: Shield },
-    { id: 'dashboard', label: t.nav.dashboard, icon: CreditCard },
     { id: 'register', label: t.nav.register, icon: UserCheck },
+    { id: 'dashboard', label: t.nav.dashboard, icon: CreditCard },
+    { id: 'landing', label: t.nav.home, icon: Shield },
     { id: 'pay', label: t.nav.pay, icon: Zap, highlight: true },
     { id: 'safety-watch', label: t.nav.safetyWatch, icon: Eye },
     { id: 'guardian', label: t.nav.guardian, icon: Users },
@@ -50,6 +51,7 @@ export const Navbar: React.FC = () => {
   const handleNav = (route: string) => {
     navigateTo(route);
     setIsMobileMenuOpen(false);
+    setIsCompactMenuOpen(false);
   };
 
   return (
@@ -143,8 +145,39 @@ export const Navbar: React.FC = () => {
             })}
           </nav>
 
+          {/* Compact navigation dropdown for medium-width screens */}
+          <div className="hidden lg:flex xl:hidden relative">
+            <button
+              id="compact-menu-toggle"
+              onClick={() => setIsCompactMenuOpen(!isCompactMenuOpen)}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-sm font-bold cursor-pointer"
+            >
+              <Menu className="w-4 h-4" />
+              <span>Menu</span>
+            </button>
+            {isCompactMenuOpen && (
+              <div className="absolute left-0 top-full mt-2 w-56 bg-white rounded-2xl border border-slate-200 shadow-xl p-2 z-50">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNav(item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-left cursor-pointer ${
+                        activeRoute === item.id ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           {/* Right Action Controls: Creator Voice + Language + TAALA Emergency */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
             {/* Quick Creator Studio Access Button */}
             <button
               id="header-creator-voice-btn"

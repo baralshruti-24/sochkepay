@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { Volume2, VolumeX, RotateCcw, AlertTriangle, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -23,16 +23,20 @@ export const VoiceWarningBanner: React.FC<VoiceWarningBannerProps> = ({ autoPlay
 
   const script =
     activeRiskAssessment.voiceScript[language] || activeRiskAssessment.voiceScript.en;
+  const autoPlayedKey = useRef<string | null>(null);
 
   useEffect(() => {
-    if (autoPlay && (isCritical || isHigh) && !isEmergency) {
+    const warningKey = `${activeRiskAssessment.riskLevel}:${activeRiskAssessment.riskScore}:${language}`;
+    if (autoPlay && (isCritical || isHigh) && !isEmergency && autoPlayedKey.current !== warningKey) {
+      autoPlayedKey.current = warningKey;
       // Gentle delayed speech to let user see the screen first
       const timer = setTimeout(() => {
         playVoiceWarning();
       }, 400);
       return () => clearTimeout(timer);
     }
-  }, [activeRiskAssessment.transactionId]);
+    return undefined;
+  }, [autoPlay, isCritical, isHigh, isEmergency, activeRiskAssessment.riskLevel, activeRiskAssessment.riskScore, language, playVoiceWarning]);
 
   return (
     <div

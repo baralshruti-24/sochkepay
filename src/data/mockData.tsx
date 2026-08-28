@@ -12,7 +12,7 @@ export const initialUserProfile: UserProfile = {
   voiceAuthEnabled: true,
   familiarImageId: 'house',
   taalaLocked: false,
-  emergencyPin: '9110',
+  emergencyPin: '',
   biometricEnrollment: {
     faceEnrolled: true,
     faceLivenessScore: 0.99,

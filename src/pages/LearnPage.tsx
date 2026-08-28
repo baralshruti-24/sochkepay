@@ -8,6 +8,9 @@ import {
   PhoneCall,
   Video,
   AlertOctagon,
+  ShoppingBag,
+  Landmark,
+  Gift,
   CheckCircle2,
   HelpCircle,
   Sparkles,
@@ -131,6 +134,22 @@ export const LearnPage: React.FC = () => {
             <p className="text-xs text-slate-600 leading-relaxed font-medium">
               {t.learn.customerCareDesc}
             </p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold"><ShoppingBag className="w-5 h-5" /></div>
+            <h3 className="text-base font-black text-slate-900">{t.learn.olxScamTitle}</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">{t.learn.olxScamDesc}</p>
+          </div>
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-sky-100 text-sky-800 flex items-center justify-center font-bold"><Landmark className="w-5 h-5" /></div>
+            <h3 className="text-base font-black text-slate-900">{t.learn.officialScamTitle}</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">{t.learn.officialScamDesc}</p>
+          </div>
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-3">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold"><Gift className="w-5 h-5" /></div>
+            <h3 className="text-base font-black text-slate-900">{t.learn.rewardScamTitle}</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">{t.learn.rewardScamDesc}</p>
           </div>
         </div>
       )}

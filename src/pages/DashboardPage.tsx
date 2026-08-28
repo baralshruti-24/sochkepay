@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
-  const { t, user, transactions, navigateTo, isTaalaLocked, lockTaala, unlockTaala } = useApp();
+  const { t, user, language, transactions, navigateTo, isTaalaLocked, lockTaala, unlockTaala } = useApp();
   const [isTaalaModalOpen, setIsTaalaModalOpen] = useState(false);
 
   const protectedPaymentsCount = transactions.length;
@@ -140,7 +140,7 @@ export const DashboardPage: React.FC = () => {
             className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
-            <span>Manage Safety Identity & Biometrics</span>
+            <span>{t.nav.register}</span>
           </button>
         </div>
 

@@ -148,7 +148,7 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     mobileSub: 'Hardware SIM Binding Active',
     ageRangeLabel: 'Age Range (Determines Adaptive Cognitive Friction & Guardian Assistance)',
     seniorGuideTitle: 'Senior-friendly safety guide is on',
-    seniorGuideBody: 'Take your time. We will show larger prompts, explain each step clearly, and remind you that your UPI PIN sends money out.',
+    seniorGuideBody: 'Take your time. SochKe Pay will help explain each step clearly and remind you that your UPI PIN sends money out of your account.',
     seniorGuideButton: 'Hear Safety Guide',
     seniorShieldActive: 'Senior Shield Mode Activated',
     age1825: '18 - 25 Years',
@@ -249,7 +249,7 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     mobileSub: 'हार्डवेयर सिम बाइंडिंग सक्रिय',
     ageRangeLabel: 'आयु वर्ग (इसके आधार पर सुरक्षा एवं परिवार सहायता तय होती है)',
     seniorGuideTitle: 'वरिष्ठ नागरिक सुरक्षा गाइड सक्रिय है',
-    seniorGuideBody: 'आराम से करें। हम बड़े निर्देश दिखाएंगे, हर चरण को सरल भाषा में समझाएंगे और याद दिलाएंगे कि यूपीआई पिन डालने से पैसे बाहर जाते हैं।',
+    seniorGuideBody: 'आराम से समय लीजिए। हम आपको बड़े निर्देश दिखाएंगे, हर कदम को साफ तौर पर समझाएंगे, और आपको यह याद दिलाते रहेंगे कि आपका यूपीआई पिन दर्ज करने से पैसे आपके खाते से बाहर जाते हैं।',
     seniorGuideButton: 'सुरक्षा गाइड सुनें',
     seniorShieldActive: 'वरिष्ठ नागरिक सुरक्षा कवच सक्रिय',
     age1825: '18 - 25 वर्ष',
@@ -348,7 +348,7 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
     mobileSub: 'ହାର୍ଡୱେର୍ ସିମ୍ ବାଇଣ୍ଡିଂ ସକ୍ରିୟ',
     ageRangeLabel: 'ବୟସ ସୀମା (ଏହା ସୁରକ୍ଷା ଓ ପରିବାର ସହାୟତା ସ୍ଥିର କରେ)',
     seniorGuideTitle: 'ବରିଷ୍ଠ ନାଗରିକ ସୁରକ୍ଷା ଗାଇଡ୍ ସକ୍ରିୟ',
-    seniorGuideBody: 'ଧୀରେ ଧୀରେ କରନ୍ତୁ। ଆମେ ବଡ଼ ନିର୍ଦ୍ଦେଶ ଦେବୁ, ପ୍ରତ୍ୟେକ ପଦକ୍ଷେପ ବୁଝାଇବୁ ଏବଂ UPI PIN ଦେଲେ ଟଙ୍କା ବାହାରକୁ ଯାଏ ବୋଲି ମନେ ପକାଇବୁ।',
+    seniorGuideBody: 'ଧୀରେ ଧୀରେ କରନ୍ତୁ। SochKe Pay ପ୍ରତ୍ୟେକ ପଦକ୍ଷେପ ସ୍ପଷ୍ଟ ଭାବେ ବୁଝାଇବ ଏବଂ UPI PIN ଦେଲେ ଟଙ୍କା ଆପଣଙ୍କ ଖାତାରୁ ବାହାରକୁ ଯାଏ ବୋଲି ମନେ ପକାଇବ।',
     seniorGuideButton: 'ସୁରକ୍ଷା ଗାଇଡ୍ ଶୁଣନ୍ତୁ',
     seniorShieldActive: 'ବରିଷ୍ଠ ନାଗରିକ ସୁରକ୍ଷା ସକ୍ରିୟ',
     age1825: '୧୮ - ୨୫ ବର୍ଷ',
@@ -444,6 +444,9 @@ export const RegisterPage: React.FC = () => {
   // Form State - Defaulting to CLEAN citizen
   const [name, setName] = useState<string>(user.name || 'Shruti Baral');
   const [ageRange, setAgeRange] = useState<AgeRange>(user.ageRange || '26-45');
+  const seniorVoiceGuide = ageRange === '60+'
+    ? `${loc.seniorGuideBody} ${currentStep === 1 ? loc.step1Sub : currentStep === 2 ? loc.step2Sub : loc.step3Sub}`
+    : '';
   const [mobileNumber, setMobileNumber] = useState<string>(user.rawMobile || '9876543210');
   const [email, setEmail] = useState<string>(user.email || '');
 
@@ -481,7 +484,7 @@ export const RegisterPage: React.FC = () => {
     user.baseline?.averagePaymentAmount ? user.baseline.averagePaymentAmount * 5 : 15000
   );
   const [nightProtection, setNightProtection] = useState<boolean>(true);
-  const [emergencyPin, setEmergencyPin] = useState<string>(user.emergencyPin || '9110');
+  const [emergencyPin, setEmergencyPin] = useState<string>(user.emergencyPin || '');
 
   // Mule Detection Result (Starts CLEAN)
   const [isEvaluatingRegistry, setIsEvaluatingRegistry] = useState<boolean>(false);
@@ -676,6 +679,7 @@ export const RegisterPage: React.FC = () => {
           voicePhraseText: voicePassphrase,
           voiceSampleDuration: 2.8,
           familiarImageId: selectedFamiliarImage,
+          familiarImageData: customFamiliarImage || undefined,
           familiarImageSecretKey: familiarSecretKey,
           fingerprintHardwareBound: true,
           secureEnclaveKeyId: 'SEC_ENC_HW_' + Math.random().toString(36).substring(2, 7).toUpperCase(),
@@ -735,6 +739,16 @@ export const RegisterPage: React.FC = () => {
             <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-2xl leading-relaxed">
               {loc.subtitle}
             </p>
+            {ageRange === '60+' && (
+              <button
+                type="button"
+                onClick={() => playVoiceWarning(seniorVoiceGuide)}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black cursor-pointer"
+              >
+                <Volume2 className="w-3.5 h-3.5" />
+                {loc.seniorGuideButton}
+              </button>
+            )}
           </div>
 
           <div className="flex-shrink-0 self-center md:self-auto">

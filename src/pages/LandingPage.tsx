@@ -118,7 +118,7 @@ export const LandingPage: React.FC = () => {
               <div className="w-full max-w-sm bg-white/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200 shadow-xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-                    Live Safety Guard
+                    How SochKe Protects You
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">
                     Active
@@ -127,11 +127,11 @@ export const LandingPage: React.FC = () => {
 
                 <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between">
                   <div>
-                    <p className="text-xs text-slate-500 font-medium">Unknown Recipient + Active Call</p>
-                    <p className="text-sm font-black text-slate-900">₹15,000 to "Refund Dept"</p>
+                    <p className="text-xs text-slate-500 font-medium">1. Check the recipient and context</p>
+                    <p className="text-sm font-black text-slate-900">2. Explain the risk before authorization</p>
                   </div>
                   <span className="text-xs font-black text-rose-600 bg-rose-50 px-2 py-1 rounded-lg border border-rose-200">
-                    PAUSE & EXPLAIN
+                    3. Protect your decision
                   </span>
                 </div>
 
