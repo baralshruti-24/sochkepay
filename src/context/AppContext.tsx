@@ -10,7 +10,7 @@ import {
   AuthMethod,
   Guardian,
 } from '../types';
-import { initialUserProfile, mockRecipients, mockSafetyWatchReports, demoScenarios } from '../data/mockData';
+import { initialUserProfile, guestUserProfile, mockRecipients, mockSafetyWatchReports, demoScenarios } from '../data/mockData';
 import { translations, TranslationDictionary } from '../services/localization';
 import { evaluateRisk } from '../services/riskEngine';
 import { audioSpeech } from '../services/audioSpeech';
@@ -61,6 +61,10 @@ interface AppContextType {
 
   // Guardian Management
   updateGuardian: (guardian: Partial<Guardian>) => void;
+
+  // Account Session Lifecycle
+  logoutUser: () => void;
+  loginUser: (profile?: Partial<UserProfile>) => void;
 
   // Audio Speech & Creator Voice Recordings
   isAudioSpeaking: boolean;
@@ -344,6 +348,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }));
   };
 
+  const logoutUser = () => {
+    setUser(guestUserProfile);
+    setIsTaalaLocked(false);
+    setPendingGuardianTransaction(null);
+    setActiveRoute('landing');
+  };
+
+  const loginUser = (profile?: Partial<UserProfile>) => {
+    setUser(prev => ({
+      ...initialUserProfile,
+      ...profile,
+      isLoggedIn: true,
+    }));
+    setActiveRoute('dashboard');
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -378,6 +398,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         reportSuspiciousAccount,
         upvoteReport,
         updateGuardian,
+        logoutUser,
+        loginUser,
         isAudioSpeaking,
         playVoiceWarning,
         stopVoiceWarning,

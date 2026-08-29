@@ -16,14 +16,24 @@ export const GuardianPage: React.FC = () => {
   const { t, user, updateGuardian, navigateTo } = useApp();
   const guardian = user.guardian;
 
-  const [isEnabled, setIsEnabled] = useState(guardian?.enabled ?? true);
-  const [threshold, setThreshold] = useState(guardian?.approvalThreshold ?? 15000);
-  const [name, setName] = useState(guardian?.name ?? 'Ananya');
-  const [relationType, setRelationType] = useState<string>(guardian?.relationship ?? 'Daughter');
+  const [isEnabled, setIsEnabled] = useState(guardian?.enabled ?? false);
+  const [threshold, setThreshold] = useState(guardian?.approvalThreshold ?? 25000);
+  const [name, setName] = useState(guardian?.name || '');
+  const [relationType, setRelationType] = useState<string>(guardian?.relationship || '');
   const [customRelation, setCustomRelation] = useState<string>('');
   const [saved, setSaved] = useState(false);
 
+  React.useEffect(() => {
+    if (guardian) {
+      setIsEnabled(guardian.enabled ?? false);
+      setThreshold(guardian.approvalThreshold ?? 25000);
+      setName(guardian.name || '');
+      setRelationType(guardian.relationship || '');
+    }
+  }, [guardian?.enabled, guardian?.approvalThreshold, guardian?.name, guardian?.relationship]);
+
   const STANDARD_RELATIONS = [
+    { value: '', label: '-- Choose Relationship (संबंध चुनें / ସମ୍ପର୍କ ବାଛନ୍ତୁ) --' },
     { value: 'Daughter', label: 'Daughter (बेटी / ଝିଅ)' },
     { value: 'Son', label: 'Son (बेटा / ପୁଅ)' },
     { value: 'Spouse', label: 'Spouse / Partner (पति-पत्नी / ଜୀବନସାଥୀ)' },
@@ -35,6 +45,8 @@ export const GuardianPage: React.FC = () => {
     { value: 'Trusted Friend', label: 'Trusted Friend (विश्वसनीय मित्र / ବିଶ୍ୱସ୍ତ ବନ୍ଧୁ)' },
     { value: 'Other', label: 'Others / Unconventional Relationship (अन्य संबंध)' },
   ];
+
+  const PRESET_LIMITS = [10000, 25000, 50000, 100000, 200000, 500000];
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +128,7 @@ export const GuardianPage: React.FC = () => {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Ananya"
+                placeholder="Enter your trusted guardian's full name (e.g. Ramesh, Sunita, Dr. Verma)"
                 className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-300 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
@@ -154,28 +166,62 @@ export const GuardianPage: React.FC = () => {
               )}
             </div>
 
-            {/* Threshold Slider */}
-            <div className="space-y-2">
+            {/* Threshold Slider & Quick Chips */}
+            <div className="space-y-3 bg-purple-50/50 p-4 rounded-2xl border border-purple-200">
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-bold text-slate-700 uppercase">
-                  {t.guardian.threshold}
-                </label>
-                <span className="text-sm font-black text-purple-700">
-                  ₹{threshold.toLocaleString('en-IN')}
-                </span>
+                <div>
+                  <label className="block text-xs font-bold text-slate-800 uppercase">
+                    {t.guardian.threshold}
+                  </label>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Transfers above this limit require guardian co-authorization.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-xl border border-purple-300 shadow-xs">
+                  <span className="text-xs font-black text-purple-700">₹</span>
+                  <input
+                    type="number"
+                    min={1000}
+                    max={500000}
+                    step={1000}
+                    value={threshold}
+                    onChange={(e) => setThreshold(Number(e.target.value) || 0)}
+                    className="w-24 text-sm font-black text-purple-900 focus:outline-none text-right"
+                  />
+                </div>
               </div>
+
+              {/* Range Slider */}
               <input
                 type="range"
-                min={5000}
-                max={50000}
-                step={2500}
-                value={threshold}
+                min={1000}
+                max={200000}
+                step={1000}
+                value={Math.min(threshold, 200000)}
                 onChange={(e) => setThreshold(Number(e.target.value))}
                 className="w-full accent-purple-600 cursor-pointer"
               />
-              <p className="text-[11px] text-slate-500 font-medium">
-                High-risk transfers above this amount or suspicious impersonation attempts will prompt guardian authorization.
-              </p>
+
+              {/* Quick Preset Limit Chips */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">
+                  Presets:
+                </span>
+                {PRESET_LIMITS.map((limit) => (
+                  <button
+                    key={limit}
+                    type="button"
+                    onClick={() => setThreshold(limit)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+                      threshold === limit
+                        ? 'bg-purple-600 text-white border-purple-600 shadow-xs'
+                        : 'bg-white text-slate-700 border-slate-200 hover:border-purple-300 hover:text-purple-700'
+                    }`}
+                  >
+                    ₹{limit >= 100000 ? `${limit / 100000} Lakh` : `${limit / 1000}k`}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <button
@@ -204,7 +250,7 @@ export const GuardianPage: React.FC = () => {
             <div className="bg-slate-800/90 rounded-2xl p-4 border border-slate-700 space-y-2.5">
               <div className="flex items-center gap-2 text-xs font-black text-amber-400">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Verification Request from Shruti</span>
+                <span>Verification Request from {user.name}</span>
               </div>
 
               <div className="space-y-1 text-xs text-slate-300 leading-relaxed font-medium">
@@ -217,7 +263,7 @@ export const GuardianPage: React.FC = () => {
                   Why verification is needed
                 </p>
                 <ul className="space-y-1.5 text-[11px] text-slate-300">
-                  <li className="flex gap-2"><span className="text-rose-400">•</span><span>Recipient is new and not in Shruti&apos;s trusted history.</span></li>
+                  <li className="flex gap-2"><span className="text-rose-400">•</span><span>Recipient is new and not in {user.name}&apos;s trusted history.</span></li>
                   <li className="flex gap-2"><span className="text-rose-400">•</span><span>Amount is unusually high compared with the normal payment pattern.</span></li>
                   <li className="flex gap-2"><span className="text-rose-400">•</span><span>Payment was initiated while the recipient context is still unverified.</span></li>
                 </ul>

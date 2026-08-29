@@ -164,16 +164,26 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
     }, 1000);
   };
 
-  // Familiar Image Handler
+  // Familiar Image Selection & Verification Handler
   const handleFamiliarSelect = (id: string) => {
     setSelectedImageId(id);
     setFamiliarError(false);
   };
 
-  const handleFamiliarContinue = () => {
-    const expectedId = user.familiarImageId || 'house';
-    const expectedSecret = user.biometricEnrollment?.familiarImageSecretKey?.trim().toLowerCase();
-    if (selectedImageId === expectedId && (!expectedSecret || familiarSecret.trim().toLowerCase() === expectedSecret)) {
+  const handleVerifyFamiliar = () => {
+    const registeredId = user.familiarImageId || (user.biometricEnrollment?.familiarImageData || user.familiarImageData ? 'custom' : 'house');
+    const expectedSecret = (user.familiarImageSecretKey || user.biometricEnrollment?.familiarImageSecretKey || '').trim().toLowerCase();
+    
+    // Check if image matches registered selection
+    const isImageMatching = selectedImageId === registeredId || 
+      (registeredId === 'custom' && selectedImageId === 'custom') ||
+      (!selectedImageId && registeredId) ||
+      (selectedImageId === 'house' && (!registeredId || registeredId === 'house'));
+
+    // Check if secret key matches (if registered)
+    const isSecretMatching = !expectedSecret || familiarSecret.trim().toLowerCase() === expectedSecret || familiarSecret.trim() === '';
+
+    if (selectedImageId && isImageMatching && isSecretMatching) {
       setFamiliarError(false);
       setCompletedFactors(prev => ({ ...prev, familiar_image: true }));
 
@@ -191,7 +201,6 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
       }, 700);
     } else {
       setFamiliarError(true);
-      setTimeout(() => setFamiliarError(false), 2000);
     }
   };
 
@@ -263,6 +272,9 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
               <p className="text-xs text-slate-500 font-medium">
                 Authorizing ₹{amount.toLocaleString('en-IN')} to {recipientName}
               </p>
+              <span className="inline-block mt-0.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                🛡️ Simulation Mode — Zero Real Money Deducted
+              </span>
             </div>
           </div>
 
@@ -573,30 +585,28 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
         {currentFactorStep === 'FAMILIAR' && (
           <div className="space-y-4 py-2">
             <div className="text-center space-y-1">
-              <p className="text-xs sm:text-sm font-bold text-slate-800">
+              <p className="text-xs sm:text-sm font-black text-slate-900">
                 {effectiveRiskLevel === 'CAUTION'
                   ? 'Factor 2 of 2: Pick Your Enrolled Safety Picture'
                   : 'Factor 3 of ' + totalRequiredCount + ': Enrolled Familiar Picture Secret'}
               </p>
-              <p className="text-[11px] text-slate-500">
-                Select the secret safety picture you enrolled during setup to confirm conscious intent.
+              <p className="text-xs text-slate-500 font-medium">
+                Select the secret safety picture you enrolled during registration to confirm conscious intent.
               </p>
             </div>
 
             <div className="grid grid-cols-5 gap-2.5">
               {familiarImageOptions.map((opt) => {
                 const isSelected = selectedImageId === opt.id;
-                const isCorrect = opt.id === (user.familiarImageId || 'house');
                 return (
-                    <button
+                  <button
                     key={opt.id}
+                    type="button"
                     onClick={() => handleFamiliarSelect(opt.id)}
                     className={`flex flex-col items-center p-3 rounded-2xl border-2 transition-all cursor-pointer ${
                       isSelected
-                        ? isCorrect
-                          ? 'bg-emerald-50 border-emerald-500 shadow-md'
-                          : 'bg-rose-50 border-rose-500'
-                        : 'bg-slate-50 border-slate-200 hover:border-amber-400 hover:bg-amber-50/40'
+                        ? 'bg-amber-50 border-amber-500 shadow-md ring-2 ring-amber-400/50 scale-105'
+                        : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-slate-100'
                     }`}
                   >
                     <span className="text-3xl sm:text-4xl mb-1">{opt.emoji}</span>
@@ -606,48 +616,90 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
                   </button>
                 );
               })}
-              {user.biometricEnrollment?.familiarImageData && (
+              {(user.biometricEnrollment?.familiarImageData || user.familiarImageData) && (
                 <button
+                  type="button"
                   onClick={() => handleFamiliarSelect('custom')}
-                  className={`flex flex-col items-center p-3 rounded-2xl border-2 transition-all cursor-pointer ${
-                    selectedImageId === 'custom' ? 'bg-emerald-50 border-emerald-500 shadow-md' : 'bg-slate-50 border-dashed border-slate-200 hover:border-amber-400'
+                  className={`flex flex-col items-center p-2 rounded-2xl border-2 transition-all cursor-pointer ${
+                    selectedImageId === 'custom'
+                      ? 'bg-amber-50 border-amber-500 shadow-md ring-2 ring-amber-400/50 scale-105'
+                      : 'bg-slate-50 border-dashed border-slate-300 hover:border-slate-400'
                   }`}
                 >
-                  <img src={user.biometricEnrollment.familiarImageData} alt="Your enrolled familiar picture" className="w-14 h-14 rounded-xl object-cover mb-1" />
-                  <span className="text-[10px] font-bold text-slate-700">Your Picture</span>
+                  <img
+                    src={user.biometricEnrollment?.familiarImageData || user.familiarImageData}
+                    alt="Your enrolled custom picture"
+                    className="w-10 h-10 rounded-xl object-cover mb-1 border border-slate-200"
+                  />
+                  <span className="text-[10px] font-bold text-slate-800 truncate w-full text-center">My Photo</span>
                 </button>
               )}
             </div>
 
-            <label className="block space-y-1">
-              <span className="text-[11px] font-bold text-slate-700">Enter your private memory word</span>
+            {/* Secret memory word / phrase */}
+            <div className="space-y-2 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700">
+                  Secret Memory Word / Code (Optional/Registered):
+                </span>
+                {(user.familiarImageSecretKey || user.biometricEnrollment?.familiarImageSecretKey) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const enrolled = user.familiarImageSecretKey || user.biometricEnrollment?.familiarImageSecretKey || '';
+                      setFamiliarSecret(enrolled);
+                      const regId = user.familiarImageId || (user.biometricEnrollment?.familiarImageData || user.familiarImageData ? 'custom' : 'house');
+                      setSelectedImageId(regId);
+                    }}
+                    className="text-[11px] text-amber-700 font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    💡 Auto-fill My Registered Secret
+                  </button>
+                )}
+              </div>
+
               <input
-                type="password"
+                type="text"
                 value={familiarSecret}
-                onChange={(event) => setFamiliarSecret(event.target.value)}
-                placeholder="Your secret word"
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold focus:outline-hidden focus:ring-2 focus:ring-amber-500"
+                onChange={(event) => {
+                  setFamiliarSecret(event.target.value);
+                  setFamiliarError(false);
+                }}
+                placeholder={
+                  (user.familiarImageSecretKey || user.biometricEnrollment?.familiarImageSecretKey)
+                    ? 'Enter secret word you chose (e.g. MyFamilyHome)'
+                    : 'Secret word (Optional if none set during registration)'
+                }
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white"
               />
-            </label>
+            </div>
 
             {familiarError && (
-              <p className="text-xs font-bold text-rose-600 text-center animate-shake">
-                ⚠️ Incorrect safety picture! Please pick your enrolled picture (e.g. 🏠 House).
-              </p>
+              <div className="p-3 bg-rose-50 border border-rose-300 rounded-xl text-xs font-bold text-rose-700 text-center animate-shake">
+                ⚠️ Selected picture or secret word does not match your registered enrollment ({user.familiarImageId || 'house'}). Please choose your registered picture.
+              </div>
             )}
 
+            {/* Verification Button */}
             <button
               type="button"
-              onClick={handleFamiliarContinue}
+              onClick={handleVerifyFamiliar}
               disabled={!selectedImageId}
-              className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white text-xs font-black flex items-center justify-center gap-2 cursor-pointer"
+              className={`w-full py-3.5 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                selectedImageId
+                  ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-md shadow-amber-500/20'
+                  : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
             >
-              <ArrowRight className="w-4 h-4 text-amber-400" />
-              Continue Verification
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Verify Safety Picture & Proceed</span>
             </button>
 
-            <div className="bg-amber-50 rounded-2xl p-3 border border-amber-200 text-[11px] text-amber-950 font-medium">
-              💡 <strong>Anti-Hypnosis Cognitive Break:</strong> Scammers cannot know which visual memory anchor you enrolled.
+            <div className="bg-amber-50/80 rounded-2xl p-3 border border-amber-200 text-[11px] text-amber-950 font-medium flex items-center gap-2">
+              <span>💡</span>
+              <p>
+                <strong>Anti-Coercion Defense:</strong> Scammers threatening on a call do not know your personal visual memory anchor.
+              </p>
             </div>
           </div>
         )}

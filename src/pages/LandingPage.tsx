@@ -64,7 +64,7 @@ export const LandingPage: React.FC = () => {
                   className="px-6 py-4 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-300 font-bold text-base flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
                 >
                   <UserCheck className="w-5 h-5 text-sky-600" />
-                  <span>Register Safety Identity</span>
+                  <span>{t.landing.ctaRegister}</span>
                 </button>
 
                 <button

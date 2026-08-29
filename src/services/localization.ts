@@ -28,11 +28,15 @@ export interface TranslationDictionary {
     taalaActive: string;
     taalaLocked: string;
     emergencyLock: string;
+    logout: string;
+    loggedInAs: string;
+    guestMode: string;
   };
   landing: {
     heroTitle: string;
     heroSub: string;
     ctaPay: string;
+    ctaRegister: string;
     ctaLearn: string;
     heroBadge: string;
     cardPreviewTitle: string;
@@ -279,11 +283,15 @@ export const translations: Record<Language, TranslationDictionary> = {
       taalaActive: 'TAALA Active',
       taalaLocked: 'Payments Locked',
       emergencyLock: '🔒 TAALA Lock',
+      logout: 'Log Out',
+      loggedInAs: 'Signed in as',
+      guestMode: 'Guest Mode',
     },
     landing: {
       heroTitle: 'Before you pay, SochKe.',
       heroSub: 'Real-time payment safety that explains risk in simple, honest language before money leaves your account.',
       ctaPay: 'Try a Safe Payment Simulator',
+      ctaRegister: 'Register Safety Identity',
       ctaLearn: 'See How It Protects You',
       heroBadge: 'Designed for Every Indian Family & Digital Beginner',
       cardPreviewTitle: 'Context-Aware Real-time Protection',
@@ -528,11 +536,15 @@ export const translations: Record<Language, TranslationDictionary> = {
       taalaActive: 'ताला सक्रिय',
       taalaLocked: 'पेमेंट लॉक है',
       emergencyLock: '🔒 ताला (आपातकालीन लॉक)',
+      logout: 'लॉग आउट',
+      loggedInAs: 'खाता',
+      guestMode: 'अतिथि मोड',
     },
     landing: {
       heroTitle: 'पैसे भेजने से पहले, सोचके।',
       heroSub: 'असली समय में खतरे की पहचान जो कठिन तकनीकी शब्दों के बिना, आपकी अपनी भाषा में सही कारण समझाती है।',
       ctaPay: 'सुरक्षित पेमेंट सिमुलेटर चलाएं',
+      ctaRegister: 'सुरक्षा खाता रजिस्टर करें',
       ctaLearn: 'जानिए यह कैसे बचाता है',
       heroBadge: 'हर भारतीय परिवार और नए डिजिटल उपयोगकर्ताओं के लिए विशेष रूप से निर्मित',
       cardPreviewTitle: 'परिस्थिति के अनुसार रीयल-टाइम सुरक्षा',
@@ -778,11 +790,15 @@ export const translations: Record<Language, TranslationDictionary> = {
       taalaActive: 'ତାଲା ସକ୍ରିୟ',
       taalaLocked: 'ପେମେଣ୍ଟ ଲକ୍ ଅଛି',
       emergencyLock: '🔒 ତାଲା (Emergency Lock)',
+      logout: 'ଲଗ୍ ଆଉଟ୍',
+      loggedInAs: 'ଖାତା',
+      guestMode: 'ଅତିଥି ମୋଡ୍',
     },
     landing: {
       heroTitle: 'ଟଙ୍କା ପଠାଇବା ପୂର୍ବରୁ, ଭାବନ୍ତୁ।',
       heroSub: 'ରିଅଲ-ଟାଇମ୍ ସୁରକ୍ଷା ଯାହା ସରଳ ଭାଷାରେ ବିପଦର କାରଣ ବୁଝାଇଥାଏ।',
       ctaPay: 'ସୁରକ୍ଷିତ ପେମେଣ୍ଟ ଚେଷ୍ଟା କରନ୍ତୁ',
+      ctaRegister: 'ସୁରକ୍ଷା ଖାତା ପଞ୍ଜୀକରଣ କରନ୍ତୁ',
       ctaLearn: 'ଏହା କିପରି ସୁରକ୍ଷା ଦିଏ ଦେଖନ୍ତୁ',
       heroBadge: 'ଭାରତୀୟ ପରିବାର ଏବଂ ନୂତନ ଡିଜିଟାଲ ବ୍ୟବହାରକାରୀଙ୍କ ପାଇଁ',
       cardPreviewTitle: 'ପରିସ୍ଥିତି ଆଧାରିତ ରିଅଲ-ଟାଇମ୍ ସୁରକ୍ଷା',

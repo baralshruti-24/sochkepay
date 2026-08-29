@@ -77,7 +77,7 @@ export const GuardianApprovalModal: React.FC<GuardianApprovalModalProps> = ({
             <span className="text-sky-700 font-mono text-[11px]">{guardian?.phoneMasked}</span>
           </div>
           <p className="text-xs text-sky-800 leading-relaxed">
-            "A high-risk payment of ₹{transaction.amount.toLocaleString('en-IN')} to an unverified recipient was initiated from Shruti's phone. Please confirm if this is authorized."
+            &quot;A high-risk payment of ₹{transaction.amount.toLocaleString('en-IN')} to an unverified recipient was initiated from {user.name}&apos;s phone. Please confirm if this is authorized.&quot;
           </p>
         </div>
 
@@ -117,3 +117,4 @@ export const GuardianApprovalModal: React.FC<GuardianApprovalModalProps> = ({
     </div>
   );
 };
+

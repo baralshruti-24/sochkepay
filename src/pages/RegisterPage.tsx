@@ -441,10 +441,13 @@ export const RegisterPage: React.FC = () => {
   // Wizard Step: 1 = Basic Info, 2 = Biometric Enroll, 3 = Safety Limits & TAALA, 4 = Result & Verification
   const [currentStep, setCurrentStep] = useState<number>(1);
 
-  // Form State - Defaulting to CLEAN citizen
-  const [name, setName] = useState<string>(user.name || 'Shruti Baral');
+  // Form State - Defaulting to user or clean citizen
+  const [name, setName] = useState<string>(user.name || 'Priya Sharma');
   const [ageRange, setAgeRange] = useState<AgeRange>(user.ageRange || '26-45');
-  const seniorVoiceGuide = ageRange === '60+'
+  const [isBeginnerGuideMode, setIsBeginnerGuideMode] = useState<boolean>(
+    !!user.beginnerGuideMode || user.ageRange === '60+'
+  );
+  const seniorVoiceGuide = (ageRange === '60+' || isBeginnerGuideMode)
     ? `${loc.seniorGuideBody} ${currentStep === 1 ? loc.step1Sub : currentStep === 2 ? loc.step2Sub : loc.step3Sub}`
     : '';
   const [mobileNumber, setMobileNumber] = useState<string>(user.rawMobile || '9876543210');
@@ -510,6 +513,7 @@ export const RegisterPage: React.FC = () => {
     if (type === 'FRESH') {
       setName('');
       setAgeRange('26-45');
+      setIsBeginnerGuideMode(false);
       setMobileNumber('');
       setEmail('');
       setPreferredLang(language || 'en');
@@ -525,9 +529,18 @@ export const RegisterPage: React.FC = () => {
       setFamiliarSecretKey('');
       setMuleIntercept(null);
       setCurrentStep(1);
+      setUser({
+        ...user,
+        name: 'Guest User',
+        isLoggedIn: false,
+        rawMobile: '',
+        phoneMasked: '+91 ••••• •••••',
+      });
     } else if (type === 'REGULAR') {
-      setName('Shruti Baral');
+      const personaName = 'Shruti Baral';
+      setName(personaName);
       setAgeRange('26-45');
+      setIsBeginnerGuideMode(false);
       setMobileNumber('9876543210');
       setEmail('baralshruti24@gmail.com');
       setPreferredLang('hi');
@@ -543,9 +556,34 @@ export const RegisterPage: React.FC = () => {
       setFamiliarSecretKey('बचपन का घर');
       setMuleIntercept(null);
       setCurrentStep(1);
+      setUser({
+        ...user,
+        id: 'USER_SHRUTI_789',
+        name: personaName,
+        isLoggedIn: true,
+        ageRange: '26-45',
+        phoneMasked: '+91 98765 •••••',
+        rawMobile: '9876543210',
+        email: 'baralshruti24@gmail.com',
+        preferredLanguage: 'hi',
+        biometricEnabled: true,
+        voiceAuthEnabled: true,
+        familiarImageId: 'house',
+        guardian: {
+          id: 'GUARD_NOMINEE_01',
+          name: 'Ananya (Daughter / Family Guardian)',
+          relationship: 'Daughter',
+          phoneMasked: '+91 98112 •••••',
+          status: 'VERIFIED',
+          approvalThreshold: 15000,
+          enabled: true,
+        },
+      });
     } else if (type === 'SENIOR') {
-      setName('Ramesh Chandra Joshi');
+      const personaName = 'Ramesh Chandra Joshi';
+      setName(personaName);
       setAgeRange('60+');
+      setIsBeginnerGuideMode(true);
       setMobileNumber('9822019482');
       setEmail('');
       setPreferredLang('hi');
@@ -561,9 +599,34 @@ export const RegisterPage: React.FC = () => {
       setFamiliarSecretKey('बचपन का हाथी');
       setMuleIntercept(null);
       setCurrentStep(1);
+      setUser({
+        ...user,
+        id: 'USER_RAMESH_882',
+        name: personaName,
+        isLoggedIn: true,
+        ageRange: '60+',
+        phoneMasked: '+91 98220 •••••',
+        rawMobile: '9822019482',
+        email: '',
+        preferredLanguage: 'hi',
+        beginnerGuideMode: true,
+        biometricEnabled: true,
+        voiceAuthEnabled: true,
+        familiarImageId: 'elephant',
+        guardian: {
+          id: 'GUARD_NOMINEE_01',
+          name: 'Rohit Joshi (Son / Family Guardian)',
+          relationship: 'Son',
+          phoneMasked: '+91 98711 •••••',
+          status: 'VERIFIED',
+          approvalThreshold: 10000,
+          enabled: true,
+        },
+      });
     } else if (type === 'MULE_SCAMMER') {
       setName('Vikram Singh (Alias: Fake Inspector)');
       setAgeRange('26-45');
+      setIsBeginnerGuideMode(false);
       setMobileNumber('9999988888'); // Burner prefix
       setEmail('fake.courier.support@tempmail.in');
       setFaceVectorSignature('VEC_FACE_FLAGGED_SCAMMER_01'); // Flagged in Civic Mule Database
@@ -690,13 +753,17 @@ export const RegisterPage: React.FC = () => {
 
         const updatedProfile: UserProfile = {
           ...user,
-          name,
+          isLoggedIn: true,
+          name: name.trim() || 'SochKe User',
           ageRange,
           phoneMasked: mobileNumber.replace(/(\d{5})(\d{5})/, '+91 $1 •••••'),
           rawMobile: mobileNumber,
           email: email || undefined,
           preferredLanguage: preferredLang,
           familiarImageId: selectedFamiliarImage,
+          familiarImageData: customFamiliarImage || undefined,
+          familiarImageSecretKey: familiarSecretKey,
+          beginnerGuideMode: isBeginnerGuideMode || ageRange === '60+',
           emergencyPin,
           biometricEnrollment: updatedBiometrics,
           baseline: {
@@ -977,7 +1044,13 @@ export const RegisterPage: React.FC = () => {
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setAgeRange(item.id as AgeRange)}
+                    onClick={() => {
+                      const newAge = item.id as AgeRange;
+                      setAgeRange(newAge);
+                      if (newAge === '60+') {
+                        setIsBeginnerGuideMode(true);
+                      }
+                    }}
                     className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
                       ageRange === item.id
                         ? 'border-sky-600 bg-sky-50/70 text-sky-950 ring-2 ring-sky-500/20'
@@ -988,6 +1061,33 @@ export const RegisterPage: React.FC = () => {
                     <div className="text-[10px] text-slate-500 mt-0.5 font-medium">{item.desc}</div>
                   </button>
                 ))}
+              </div>
+            </div>
+
+            {/* Friendly Senior & Beginner Audio Guide Mode Toggle */}
+            <div className="space-y-2 md:col-span-2 bg-amber-50/80 p-4 sm:p-5 rounded-2xl border border-amber-200/80">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">🎙️</span>
+                    <h4 className="text-xs sm:text-sm font-black text-amber-950">
+                      Friendly Beginner &amp; Senior Voice Guide Mode (सुगम ऑडियो मार्गदर्शिका)
+                    </h4>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-amber-900/90 font-medium leading-relaxed">
+                    Uses friendly spoken voice cues in Hindi/Odia/English, simplified non-technical explanations, and automatic audio readouts for payments to protect elder citizens and new digital users.
+                  </p>
+                </div>
+
+                <label className="relative inline-flex items-center cursor-pointer flex-shrink-0 mt-1">
+                  <input
+                    type="checkbox"
+                    checked={isBeginnerGuideMode}
+                    onChange={(e) => setIsBeginnerGuideMode(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                </label>
               </div>
             </div>
 
@@ -1173,6 +1273,7 @@ export const RegisterPage: React.FC = () => {
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 {familiarImageOptions.map((opt) => (
                   <button
+                    key={opt.id}
                     type="button"
                     onClick={() => setSelectedFamiliarImage(opt.id)}
                     className={`p-3 rounded-2xl text-center border transition-all cursor-pointer flex flex-col items-center gap-1.5 ${

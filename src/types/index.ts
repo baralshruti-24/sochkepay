@@ -156,6 +156,7 @@ export interface BiometricEnrollmentDetails {
 export interface UserProfile {
   id: string;
   name: string;
+  isLoggedIn?: boolean;
   ageRange: AgeRange;
   phoneMasked: string;
   rawMobile?: string;
@@ -164,6 +165,9 @@ export interface UserProfile {
   biometricEnabled: boolean;
   voiceAuthEnabled: boolean;
   familiarImageId: string;
+  familiarImageData?: string;
+  familiarImageSecretKey?: string;
+  beginnerGuideMode?: boolean;
   biometricEnrollment?: BiometricEnrollmentDetails;
   guardian?: Guardian;
   taalaLocked: boolean;
@@ -171,3 +175,4 @@ export interface UserProfile {
   emergencyPin?: string;
   baseline: BehavioralBaseline;
 }
+

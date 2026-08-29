@@ -11,6 +11,8 @@ import { SafetyChecklist } from '../safety/SafetyChecklist';
 import { AuthVerificationModal } from '../safety/AuthVerificationModal';
 import { GuardianApprovalModal } from '../safety/GuardianApproval';
 import { PaymentSuccessModal } from '../safety/PaymentSuccessModal';
+import { QrScannerModal } from '../safety/QrScannerModal';
+import { audioSpeech } from '../services/audioSpeech';
 import {
   PhoneCall,
   MonitorUp,
@@ -27,6 +29,10 @@ import {
   ArrowRight,
   AlertTriangle,
   Lock,
+  QrCode,
+  Volume2,
+  UserCheck,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const PaymentSimulatorPage: React.FC = () => {
@@ -50,15 +56,38 @@ export const PaymentSimulatorPage: React.FC = () => {
     rejectGuardianTransaction,
     isTaalaLocked,
     user,
+    language,
   } = useApp();
 
   const [step, setStep] = useState<'FORM' | 'PAUSE_WARNING' | 'CHECKLIST' | 'AUTH' | 'SUCCESS'>('FORM');
   const [completedTx, setCompletedTx] = useState<Transaction | null>(null);
   const [recipientSearch, setRecipientSearch] = useState('');
+  const [isQrScannerOpen, setIsQrScannerOpen] = useState<boolean>(false);
+  const [qrSuccessNotice, setQrSuccessNotice] = useState<string | null>(null);
+  const [isBeginnerModeActive, setIsBeginnerModeActive] = useState<boolean>(
+    !!user.beginnerGuideMode || user.ageRange === '60+'
+  );
+
+  // Payer / Sender account state to detect mismatch against registered user profile
+  const [payerName, setPayerName] = useState<string>(user.name);
+  const [payerPhone, setPayerPhone] = useState<string>(user.phoneMasked);
+  const [isEditingSender, setIsEditingSender] = useState<boolean>(false);
+
+  useEffect(() => {
+    setPayerName(user.name);
+    setPayerPhone(user.phoneMasked);
+  }, [user.name, user.phoneMasked]);
+
+  const isAccountMismatch =
+    user.isLoggedIn !== false &&
+    (payerName.trim().toLowerCase() !== user.name.trim().toLowerCase() ||
+      payerPhone.trim() !== user.phoneMasked.trim());
 
   const isHighRisk =
-    activeRiskAssessment.riskLevel === 'HIGH' || activeRiskAssessment.riskLevel === 'CRITICAL';
-  const isCaution = activeRiskAssessment.riskLevel === 'CAUTION';
+    activeRiskAssessment.riskLevel === 'HIGH' ||
+    activeRiskAssessment.riskLevel === 'CRITICAL' ||
+    isAccountMismatch;
+  const isCaution = activeRiskAssessment.riskLevel === 'CAUTION' && !isHighRisk;
 
   // Toggle helpers
   const toggleContext = (key: keyof typeof currentContext) => {
@@ -106,6 +135,47 @@ export const PaymentSimulatorPage: React.FC = () => {
     setCompletedTx(null);
   };
 
+  const handleQrScanComplete = (recipient: Recipient, amount?: number, note?: string) => {
+    setCurrentRecipient(recipient);
+    if (amount !== undefined) setCurrentAmount(amount);
+    if (note !== undefined) setCurrentNote(note);
+    setQrSuccessNotice(
+      `QR Code Scanned: ${recipient.name} (${recipient.vpa})${
+        recipient.safetyWatchStatus === 'CONFIRMED_SUSPICIOUS' ? ' • ⚠️ Safety Watch Match!' : ''
+      }`
+    );
+    setTimeout(() => setQrSuccessNotice(null), 5000);
+  };
+
+  // Senior / Friendly Voice guidance reader
+  const handlePlaySeniorGuidance = () => {
+    const recName = currentRecipient.name;
+    const amountStr = currentAmount.toLocaleString('en-IN');
+    let speechText = '';
+
+    if (language === 'hi') {
+      if (isHighRisk) {
+        speechText = `सावधान! आप ${recName} को ${amountStr} रुपये भेज रहे हैं। यह एक नया या संदिग्ध खाता हो सकता है। कृपया किसी के कहने पर या फोन कॉल पर यूपीआई पिन दर्ज न करें।`;
+      } else {
+        speechText = `आप ${recName} को ${amountStr} रुपये भेज रहे हैं। यूपीआई पिन केवल पैसे भेजने के लिए होता है, पैसे प्राप्त करने के लिए नहीं।`;
+      }
+    } else if (language === 'or') {
+      if (isHighRisk) {
+        speechText = `ସାବଧାନ! ଆପଣ ${recName} ଙ୍କୁ ${amountStr} ଟଙ୍କା ପଠାଉଛନ୍ତି। ଏହା ଏକ ନୂଆ ବା ସନ୍ଦିଗ୍ଧ ଆକାଉଣ୍ଟ ହୋଇପାରେ। କଲ୍ ରେ ଥିବା ସମୟରେ UPI PIN ଦିଅନ୍ତୁ ନାହିଁ।`;
+      } else {
+        speechText = `ଆପଣ ${recName} ଙ୍କୁ ${amountStr} ଟଙ୍କା ପଠାଉଛନ୍ତି। UPI PIN କେବଳ ଟଙ୍କା ପଠାଇବା ପାଇଁ ବ୍ୟବହାର ହୁଏ।`;
+      }
+    } else {
+      if (isHighRisk) {
+        speechText = `Warning! You are sending ${amountStr} rupees to ${recName}. This recipient has elevated risk signals. Never enter your UPI PIN on a phone call or for receiving money.`;
+      } else {
+        speechText = `You are sending ${amountStr} rupees to ${recName}. Remember that UPI PIN is only used to send money, never to receive.`;
+      }
+    }
+
+    audioSpeech.speak(speechText, language);
+  };
+
   const filteredRecipients = mockRecipients.filter(
     r =>
       r.name.toLowerCase().includes(recipientSearch.toLowerCase()) ||
@@ -123,9 +193,15 @@ export const PaymentSimulatorPage: React.FC = () => {
               {t.pay.scenarioPicker}
             </h2>
           </div>
-          <span className="text-xs text-slate-400 font-bold">
-            Simulates instant UPI contexts & telemetry
-          </span>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 font-bold border border-emerald-800/80 flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3 text-emerald-400" />
+              <span>Safe Sandbox: No Real Money Deducted</span>
+            </span>
+            <span className="text-slate-400 font-medium hidden md:inline">
+              • Simulates cognitive UPI telemetry
+            </span>
+          </div>
         </div>
 
         {/* Horizontal Scenario Pills Carousel */}
@@ -163,25 +239,196 @@ export const PaymentSimulatorPage: React.FC = () => {
         {/* Left Column: Form & Telemetry Toggles (5 Cols) */}
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-sm space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-black">
-                  ₹
+            {/* Header: Paying Account info with personalized user name & verification status */}
+            <div className="space-y-2 border-b border-slate-100 pb-3.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-black text-sm">
+                    ₹
+                  </div>
+                  <div>
+                    <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">
+                      {t.pay.title}
+                    </h3>
+                    <p className="text-[11px] text-slate-500 font-bold flex items-center gap-1.5">
+                      <UserCheck className="w-3 h-3 text-emerald-600" />
+                      <span>
+                        Paying as: <strong>{payerName}</strong> ({payerPhone})
+                      </span>
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                  {t.pay.title}
-                </h3>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingSender(!isEditingSender)}
+                    className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 cursor-pointer"
+                    title="Simulate entering a different paying account to test identity mismatch detection"
+                  >
+                    {isEditingSender ? 'Done' : 'Test Account Mismatch'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsBeginnerModeActive(!isBeginnerModeActive)}
+                    className={`text-[10px] font-black px-2.5 py-1 rounded-xl border flex items-center gap-1 transition-all cursor-pointer ${
+                      isBeginnerModeActive
+                        ? 'bg-amber-100 text-amber-900 border-amber-300 shadow-xs'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                    title="Toggle Elder / Beginner Voice Guide Mode"
+                  >
+                    <Volume2 className="w-3 h-3 text-amber-600" />
+                    <span>{isBeginnerModeActive ? 'Senior Voice Active' : 'Enable Voice Guide'}</span>
+                  </button>
+                </div>
               </div>
-              <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-lg">
-                Simulated UPI
-              </span>
+
+              {/* Collapsible Edit Payer Input (To test Mismatch Detection for Judges) */}
+              {isEditingSender && (
+                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2.5 animate-in fade-in">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                    <span>Simulate Sender Account Details:</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPayerName(user.name);
+                        setPayerPhone(user.phoneMasked);
+                      }}
+                      className="text-[10px] text-sky-600 font-black hover:underline cursor-pointer"
+                    >
+                      Reset to Verified User ({user.name})
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                        Payer Account Name
+                      </label>
+                      <input
+                        type="text"
+                        value={payerName}
+                        onChange={(e) => setPayerName(e.target.value)}
+                        placeholder="e.g. Unknown User / Stolen SIM"
+                        className="w-full px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-slate-500 block mb-1">
+                        Payer Mobile / SIM
+                      </label>
+                      <input
+                        type="text"
+                        value={payerPhone}
+                        onChange={(e) => setPayerPhone(e.target.value)}
+                        placeholder="+91 99999 •••••"
+                        className="w-full px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs font-bold"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPayerName('Manoj (Burner Account)');
+                        setPayerPhone('+91 88888 12345');
+                      }}
+                      className="text-[10px] px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 font-bold border border-rose-200 cursor-pointer hover:bg-rose-200"
+                    >
+                      ⚡ Test Foreign/Mule Account
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* ⚠️ Account Identity Mismatch Notice */}
+              {isAccountMismatch && (
+                <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-3.5 space-y-1.5 animate-in fade-in">
+                  <div className="flex items-center gap-2 text-amber-900 font-black text-xs">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 animate-bounce" />
+                    <span>⚠️ Account Identity Mismatch Notice</span>
+                  </div>
+                  <p className="text-xs text-amber-950 font-medium leading-relaxed">
+                    The payment source details (<strong>{payerName}</strong> / <strong>{payerPhone}</strong>) do not match your registered SochKe safety profile (<strong>{user.name}</strong> / <strong>{user.phoneMasked}</strong>).
+                  </p>
+                  <p className="text-[11px] text-amber-900 font-bold bg-amber-100/80 p-2 rounded-xl border border-amber-200">
+                    🛡️ <strong>Safety Safeguard:</strong> This may indicate a device swap, guest access, or unauthorized attempt. Strict biometric authentication and guardian check are enforced.
+                  </p>
+                </div>
+              )}
+
+              {/* Guest Mode Alert if user is logged out */}
+              {user.isLoggedIn === false && (
+                <div className="bg-slate-100 border border-slate-300 rounded-2xl p-3 flex items-center justify-between text-xs text-slate-700">
+                  <div className="flex items-center gap-2 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    <span>Operating in <strong>Guest Mode</strong> (Not Logged In).</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-sky-700 underline cursor-pointer">
+                    Register Safety Profile
+                  </span>
+                </div>
+              )}
             </div>
 
-            {/* Recipient Picker */}
+            {/* Senior / Beginner Voice Guide Bar */}
+            {isBeginnerModeActive && (
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-3.5 border border-amber-200 text-amber-950 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black flex items-center gap-1.5 text-amber-900">
+                    <Volume2 className="w-4 h-4 text-amber-600 animate-pulse" />
+                    <span>Friendly Senior & Beginner Voice Guide</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handlePlaySeniorGuidance}
+                    className="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-[10px] flex items-center gap-1 shadow-xs cursor-pointer"
+                  >
+                    <span>🔊 Listen in Voice</span>
+                  </button>
+                </div>
+                <p className="text-[11px] text-amber-900/90 font-medium leading-relaxed">
+                  {language === 'hi'
+                    ? 'याद रखें: यूपीआई पिन केवल पैसे भेजने के लिए होता है। किसी भी फोन कॉल पर या पैसे प्राप्त करने के लिए पिन कभी दर्ज न करें।'
+                    : language === 'or'
+                    ? 'ମନେରଖନ୍ତୁ: UPI PIN କେବଳ ଟଙ୍କା ପଠାଇବା ପାଇଁ ବ୍ୟବହାର ହୁଏ। କଲ୍ ରେ ଥିବା ସମୟରେ କାହାକୁ PIN କୁହନ୍ତୁ ନାହିଁ।'
+                    : 'Remember: Your UPI PIN is only used to SEND money. Never enter your PIN to receive money or upon requests from unknown callers.'}
+                </p>
+              </div>
+            )}
+
+            {/* QR Scan Success Alert */}
+            {qrSuccessNotice && (
+              <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-3 text-xs font-bold text-emerald-900 flex items-center justify-between animate-in fade-in duration-200">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <span>{qrSuccessNotice}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setQrSuccessNotice(null)}
+                  className="text-emerald-700 hover:text-emerald-950 text-xs font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            {/* Recipient Picker & QR Scanner Button */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                {t.pay.recipientInput}
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  {t.pay.recipientInput}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsQrScannerOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black shadow-sm transition-all cursor-pointer"
+                >
+                  <QrCode className="w-3.5 h-3.5" />
+                  <span>Scan UPI QR Code</span>
+                </button>
+              </div>
 
               <div className="relative">
                 <select
@@ -323,6 +570,50 @@ export const PaymentSimulatorPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Guardian Family Mode Active Status & Limit Indicator */}
+            {user.guardian?.enabled && (
+              <div
+                className={`p-3 rounded-2xl border text-xs flex items-center justify-between gap-3 ${
+                  currentAmount >= (user.guardian.approvalThreshold || 15000)
+                    ? 'bg-purple-950/30 border-purple-400/60 text-purple-200 shadow-sm'
+                    : 'bg-slate-800/40 border-slate-700/50 text-slate-400'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center font-bold text-xs ${
+                      currentAmount >= (user.guardian.approvalThreshold || 15000)
+                        ? 'bg-purple-500 text-white animate-pulse'
+                        : 'bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="font-black text-slate-200 block text-[11px]">
+                      Family Guardian Mode Active
+                    </span>
+                    <span className="text-[10px] text-slate-300">
+                      Guardian: <strong>{user.guardian.name || 'Nominee'}</strong> • Threshold: ₹
+                      {(user.guardian.approvalThreshold || 15000).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                </div>
+
+                <span
+                  className={`text-[10px] font-black px-2 py-0.5 rounded-md ${
+                    currentAmount >= (user.guardian.approvalThreshold || 15000)
+                      ? 'bg-purple-500/30 text-purple-200 border border-purple-400/40'
+                      : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  {currentAmount >= (user.guardian.approvalThreshold || 15000)
+                    ? '⚡ Exceeds Limit (Requires Approval)'
+                    : 'Within Limit'}
+                </span>
+              </div>
+            )}
+
             {/* Main Action Button */}
             <div className="space-y-2">
               <button
@@ -363,6 +654,11 @@ export const PaymentSimulatorPage: React.FC = () => {
                     : '🔴 4 Factors (Use All Auth Layers)'}
                 </span>
               </div>
+
+              {/* Simulation Safety Assurance Note */}
+              <p className="text-[11px] text-center font-semibold text-slate-400 pt-1">
+                🔒 Safe simulation environment • No actual bank account is debited
+              </p>
             </div>
           </div>
         </div>
@@ -493,6 +789,13 @@ export const PaymentSimulatorPage: React.FC = () => {
           onClose={() => {}}
         />
       )}
+
+      {/* 6. UPI QR Code Scanner Modal */}
+      <QrScannerModal
+        isOpen={isQrScannerOpen}
+        onClose={() => setIsQrScannerOpen(false)}
+        onScanComplete={handleQrScanComplete}
+      />
     </div>
   );
 };

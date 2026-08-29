@@ -3,6 +3,7 @@ import { Recipient, DemoScenario, SafetyWatchReport, FamiliarImageOption, UserPr
 export const initialUserProfile: UserProfile = {
   id: 'USER_SHRUTI_789',
   name: 'Shruti Baral',
+  isLoggedIn: true,
   ageRange: '26-45',
   phoneMasked: '+91 98765 •••••',
   rawMobile: '9876543210',
@@ -29,13 +30,13 @@ export const initialUserProfile: UserProfile = {
     muleCheckStatus: 'CLEAN',
   },
   guardian: {
-    id: 'GUARD_ANANYA_01',
-    name: 'Ananya',
-    relationship: 'Daughter / Family Guardian',
+    id: 'GUARD_NOMINEE_01',
+    name: 'Ananya (Daughter / Family Guardian)',
+    relationship: 'Daughter',
     phoneMasked: '+91 98112 •••••',
     status: 'VERIFIED',
     approvalThreshold: 15000,
-    enabled: false,
+    enabled: true,
   },
   baseline: {
     averagePaymentAmount: 2800,
@@ -44,6 +45,39 @@ export const initialUserProfile: UserProfile = {
     typicalWeeklyVelocity: 8,
     knownRecipientsCount: 14,
     usualCategories: ['grocery', 'utility', 'friend', 'dairy'],
+  },
+};
+
+export const guestUserProfile: UserProfile = {
+  id: 'GUEST_USER_00',
+  name: 'Guest User',
+  isLoggedIn: false,
+  ageRange: '26-45',
+  phoneMasked: '+91 ••••• •••••',
+  rawMobile: '',
+  email: '',
+  preferredLanguage: 'en',
+  biometricEnabled: false,
+  voiceAuthEnabled: false,
+  familiarImageId: '',
+  taalaLocked: false,
+  emergencyPin: '',
+  guardian: {
+    id: 'GUARD_NOMINEE_00',
+    name: '',
+    relationship: '',
+    phoneMasked: '',
+    status: 'PENDING',
+    approvalThreshold: 25000,
+    enabled: false,
+  },
+  baseline: {
+    averagePaymentAmount: 2000,
+    normalHoursStart: 8,
+    normalHoursEnd: 22,
+    typicalWeeklyVelocity: 5,
+    knownRecipientsCount: 0,
+    usualCategories: ['grocery'],
   },
 };
 
@@ -543,3 +577,4 @@ export const mockSafetyWatchReports: SafetyWatchReport[] = [
     associatedAccountsCount: 2,
   },
 ];
+
