@@ -125,16 +125,25 @@ export const LandingPage: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-slate-500 font-medium">1. Check the recipient and context</p>
-                    <p className="text-sm font-black text-slate-900">2. Explain the risk before authorization</p>
-                  </div>
-                  <span className="text-xs font-black text-rose-600 bg-rose-50 px-2 py-1 rounded-lg border border-rose-200">
-                    3. Protect your decision
-                  </span>
-                </div>
+               <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+  <div className="px-3 py-2 rounded-xl bg-white border border-slate-200">
+    <p className="text-sm font-bold text-slate-600">
+      1. Check the recipient and context
+    </p>
+  </div>
 
+  <div className="px-3 py-2 rounded-xl bg-white border border-slate-200">
+    <p className="text-sm font-bold text-slate-600">
+      2. Explain the risk before authorization
+    </p>
+  </div>
+
+  <div className="px-3 py-2 rounded-xl bg-white border border-slate-200">
+    <p className="text-sm font-bold text-slate-600">
+      3. Protect your decision
+    </p>
+  </div>
+</div>
               </div>
             </div>
           </div>
