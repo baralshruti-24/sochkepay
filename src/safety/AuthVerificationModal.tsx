@@ -167,9 +167,13 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
   // Familiar Image Handler
   const handleFamiliarSelect = (id: string) => {
     setSelectedImageId(id);
+    setFamiliarError(false);
+  };
+
+  const handleFamiliarContinue = () => {
     const expectedId = user.familiarImageId || 'house';
     const expectedSecret = user.biometricEnrollment?.familiarImageSecretKey?.trim().toLowerCase();
-    if (id === expectedId && (!expectedSecret || familiarSecret.trim().toLowerCase() === expectedSecret)) {
+    if (selectedImageId === expectedId && (!expectedSecret || familiarSecret.trim().toLowerCase() === expectedSecret)) {
       setFamiliarError(false);
       setCompletedFactors(prev => ({ ...prev, familiar_image: true }));
 
@@ -584,7 +588,7 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
                 const isSelected = selectedImageId === opt.id;
                 const isCorrect = opt.id === (user.familiarImageId || 'house');
                 return (
-                  <button
+                    <button
                     key={opt.id}
                     onClick={() => handleFamiliarSelect(opt.id)}
                     className={`flex flex-col items-center p-3 rounded-2xl border-2 transition-all cursor-pointer ${
@@ -631,6 +635,16 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
                 ⚠️ Incorrect safety picture! Please pick your enrolled picture (e.g. 🏠 House).
               </p>
             )}
+
+            <button
+              type="button"
+              onClick={handleFamiliarContinue}
+              disabled={!selectedImageId}
+              className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white text-xs font-black flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <ArrowRight className="w-4 h-4 text-amber-400" />
+              Continue Verification
+            </button>
 
             <div className="bg-amber-50 rounded-2xl p-3 border border-amber-200 text-[11px] text-amber-950 font-medium">
               💡 <strong>Anti-Hypnosis Cognitive Break:</strong> Scammers cannot know which visual memory anchor you enrolled.

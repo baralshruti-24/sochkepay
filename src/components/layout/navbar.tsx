@@ -36,13 +36,13 @@ export const Navbar: React.FC = () => {
   const [isCompactMenuOpen, setIsCompactMenuOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
- const navItems = [
-  { id: 'landing', label: t.nav.home, icon: Shield },
-  { id: 'safety-watch', label: t.nav.safetyWatch, icon: Eye },
+  const navItems = [
   { id: 'register', label: t.nav.register, icon: UserCheck },
   { id: 'dashboard', label: t.nav.dashboard, icon: CreditCard },
+  { id: 'landing', label: t.nav.home, icon: Shield },
   { id: 'pay', label: t.nav.pay, icon: Zap, highlight: true },
   { id: 'guardian', label: t.nav.guardian, icon: Users },
+  { id: 'safety-watch', label: t.nav.safetyWatch, icon: Eye },
   { id: 'learn', label: t.nav.learn, icon: BookOpen },
   { id: 'voice-studio', label: t.nav.voiceStudio, icon: Headphones },
   { id: 'demo', label: t.nav.demo, icon: Sliders },
@@ -150,7 +150,7 @@ export const Navbar: React.FC = () => {
             <button
               id="compact-menu-toggle"
               onClick={() => setIsCompactMenuOpen(!isCompactMenuOpen)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-sm font-bold cursor-pointer"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-xs sm:text-sm font-bold cursor-pointer"
             >
               <Menu className="w-4 h-4" />
               <span>Menu</span>
