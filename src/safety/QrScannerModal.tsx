@@ -480,12 +480,11 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
+ <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-start justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
       {/* Hidden canvas for video frame extraction */}
       <canvas ref={canvasRef} className="hidden" />
 
-      <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-y-auto my-auto flex flex-col max-h-[90vh]">
         {/* Modal Header */}
         <div className="bg-slate-900 text-white p-5 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -896,5 +895,4 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         </div>
       </div>
     </div>
-  );
 };
