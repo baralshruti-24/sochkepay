@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-// @ts-ignore - jsqr package types not available
 import jsQR from 'jsqr';
 import { useApp } from '../context/AppContext';
 import { Recipient } from '../types';
