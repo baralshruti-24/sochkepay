@@ -36,17 +36,17 @@ export const Navbar: React.FC = () => {
   const [isCompactMenuOpen, setIsCompactMenuOpen] = useState(false);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
 
-  const navItems = [
-    { id: 'register', label: t.nav.register, icon: UserCheck },
-    { id: 'dashboard', label: t.nav.dashboard, icon: CreditCard },
-    { id: 'landing', label: t.nav.home, icon: Shield },
-    { id: 'pay', label: t.nav.pay, icon: Zap, highlight: true },
-    { id: 'safety-watch', label: t.nav.safetyWatch, icon: Eye },
-    { id: 'guardian', label: t.nav.guardian, icon: Users },
-    { id: 'learn', label: t.nav.learn, icon: BookOpen },
-    { id: 'voice-studio', label: t.nav.voiceStudio, icon: Headphones },
-    { id: 'demo', label: t.nav.demo, icon: Sliders },
-  ];
+ const navItems = [
+  { id: 'landing', label: t.nav.home, icon: Shield },
+  { id: 'safety-watch', label: t.nav.safetyWatch, icon: Eye },
+  { id: 'register', label: t.nav.register, icon: UserCheck },
+  { id: 'dashboard', label: t.nav.dashboard, icon: CreditCard },
+  { id: 'pay', label: t.nav.pay, icon: Zap, highlight: true },
+  { id: 'guardian', label: t.nav.guardian, icon: Users },
+  { id: 'learn', label: t.nav.learn, icon: BookOpen },
+  { id: 'voice-studio', label: t.nav.voiceStudio, icon: Headphones },
+  { id: 'demo', label: t.nav.demo, icon: Sliders },
+];
 
   const handleNav = (route: string) => {
     navigateTo(route);
