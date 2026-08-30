@@ -37,7 +37,7 @@ export const VoiceWarningBanner: React.FC<VoiceWarningBannerProps> = ({ autoPlay
       autoPlayedKey.current = warningKey;
       // Gentle delayed speech to let user see the screen first
       const timer = setTimeout(() => {
-        playVoiceWarning(undefined, 'generic_only');
+           playVoiceWarning(undefined, 'default');
       }, 400);
       return () => clearTimeout(timer);
     }
@@ -109,9 +109,9 @@ export const VoiceWarningBanner: React.FC<VoiceWarningBannerProps> = ({ autoPlay
             </button>
           ) : (
             <button
-              onClick={() => playVoiceWarning(undefined, 'generic_only')}
+              onClick={() => playVoiceWarning(undefined, 'default')}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-slate-950 hover:bg-slate-100 text-xs font-black transition-all shadow-md cursor-pointer"
-            >
+             >
               <RotateCcw className={`w-4 h-4 ${isEmergency ? 'text-teal-600' : isCritical ? 'text-rose-600' : 'text-amber-600'}`} />
               <span>{isEmergency ? 'Listen Priority Guidance' : t.voiceWarning.playAgain}</span>
             </button>

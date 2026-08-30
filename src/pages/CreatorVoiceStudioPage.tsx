@@ -31,6 +31,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [audioError, setAudioError] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+   const [pendingAudioBlob, setPendingAudioBlob] = useState<Blob | null>(null);
   const [pendingAudioUrl, setPendingAudioUrl] = useState<string | null>(null);
 
   // New Custom Prompt Form state
@@ -67,7 +68,27 @@ export const CreatorVoiceStudioPage: React.FC = () => {
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioChunksRef.current = [];
-      const mediaRecorder = new MediaRecorder(stream);
+            let mimeType = 'audio/webm';
+      let options = {};
+      const types = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/ogg;codecs=opus',
+        'audio/mp4',
+        'audio/aac',
+        'audio/wav'
+      ];
+      
+      if (typeof MediaRecorder.isTypeSupported === 'function') {
+        for (const type of types) {
+          if (MediaRecorder.isTypeSupported(type)) {
+            mimeType = type;
+            options = { mimeType };
+            break;
+          }
+        }
+      }
+        const mediaRecorder = new MediaRecorder(stream, options);
       mediaRecorderRef.current = mediaRecorder;
 
       mediaRecorder.ondataavailable = (event) => {
@@ -77,13 +98,13 @@ export const CreatorVoiceStudioPage: React.FC = () => {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+         const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         const audioUrl = URL.createObjectURL(audioBlob);
 
-       
+             setPendingAudioBlob(audioBlob);
             setPendingAudioUrl(audioUrl);
 
-            setSuccessToast(`Recorded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Please save.`);
+            setSuccessToast(`Recorded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! You can now preview or save.`);
         setTimeout(() => setSuccessToast(null), 4000);
 
         // Stop media tracks
@@ -123,8 +144,9 @@ export const CreatorVoiceStudioPage: React.FC = () => {
     if (!file) return;
 
     const audioUrl = URL.createObjectURL(file);
+    setPendingAudioBlob(file);
     setPendingAudioUrl(audioUrl);
-    setSuccessToast(`Uploaded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Please save.`);
+     setSuccessToast(`Uploaded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! You can now preview or save.`);
     setTimeout(() => setSuccessToast(null), 4000);
   };
 
@@ -143,7 +165,21 @@ export const CreatorVoiceStudioPage: React.FC = () => {
       setIsPlayingAudio(false);
     });
   };
-
+  const playPendingAudio = () => {
+    if (!pendingAudioUrl) return;
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+    }
+    const audio = new Audio(pendingAudioUrl);
+    audioPlayerRef.current = audio;
+    setIsPlayingAudio(true);
+    audio.onended = () => setIsPlayingAudio(false);
+    audio.onerror = () => setIsPlayingAudio(false);
+    audio.play().catch((err) => {
+      console.warn('Draft playback error:', err);
+      setIsPlayingAudio(false);
+    });
+  };
   const deleteCurrentRecording = () => {
     if (!currentRecording) return;
     if (audioPlayerRef.current) audioPlayerRef.current.pause();
@@ -154,8 +190,9 @@ export const CreatorVoiceStudioPage: React.FC = () => {
   };
 
    const savePendingAudio = () => {
-    if (!pendingAudioUrl) return;
-    saveCreatorRecording(currentKey, pendingAudioUrl, recordingTime || 6);
+    if (!pendingAudioBlob) return;
+    saveCreatorRecording(currentKey, pendingAudioBlob, recordingTime || 6);
+    setPendingAudioBlob(null);
     setPendingAudioUrl(null);
     setSuccessToast(`Saved ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Active in Live Simulator.`);
     setTimeout(() => setSuccessToast(null), 4000);
@@ -422,7 +459,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
         <div className="lg:col-span-5 bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-3 max-h-[750px] overflow-y-auto">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <h3 className="text-xs font-black uppercase tracking-wider text-slate-500">
-              Safety Scenarios ({promptsList.length})
+             Safety Scenarios ({selectedScenarioIndex + 1}/{promptsList.length})
             </h3>
             <span className="text-[11px] font-bold text-slate-400">Click to record voice</span>
           </div>
@@ -490,7 +527,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black tracking-wider uppercase text-amber-400">
-                  Creator Teleprompter • {language.toUpperCase()} Mode
+                  Scenario {selectedScenarioIndex + 1} of {promptsList.length} • {language.toUpperCase()} Mode
                 </span>
                 <span
                   className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
@@ -582,15 +619,26 @@ export const CreatorVoiceStudioPage: React.FC = () => {
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 {pendingAudioUrl ? (
                   <>
+                        <button
+                      onClick={playPendingAudio}
+                      disabled={isPlayingAudio}
+                      className="flex-1 sm:flex-none px-4 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
+                    >
+                      <Play className="w-4 h-4 fill-slate-950" />
+                      <span>{isPlayingAudio ? 'Playing Draft...' : 'Play Draft'}</span>
+                    </button>
                     <button
                       onClick={savePendingAudio}
-                      className="flex-1 sm:flex-none px-5 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
+                      className="flex-1 sm:flex-none px-4 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
                     >
                       <CheckCircle2 className="w-4 h-4" />
                       <span>Save Recording</span>
                     </button>
                     <button
-                      onClick={() => setPendingAudioUrl(null)}
+                       onClick={() => {
+                        setPendingAudioBlob(null);
+                        setPendingAudioUrl(null);
+                      }}
                       className="px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-rose-950 text-rose-300 border border-slate-700 hover:border-rose-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
                     >
                       <Trash2 className="w-4 h-4" />
