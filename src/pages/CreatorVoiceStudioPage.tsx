@@ -31,6 +31,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [audioError, setAudioError] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [pendingAudioUrl, setPendingAudioUrl] = useState<string | null>(null);
 
   // New Custom Prompt Form state
   const [isAddingNewPrompt, setIsAddingNewPrompt] = useState<boolean>(false);
@@ -52,6 +53,9 @@ export const CreatorVoiceStudioPage: React.FC = () => {
   const currentKey = `${currentScenario?.id || 'SCENARIO_REFUND_QR_SCAM'}_${language}`;
   const currentRecording = creatorRecordings ? creatorRecordings[currentKey] : undefined;
 
+  useEffect(() => {
+    console.log('CreatorVoiceStudioPage: currentKey =', currentKey, ', currentRecording =', currentRecording);
+  }, [currentKey, currentRecording]);
   // Start recording using browser MediaRecorder API
   const startRecording = async () => {
     setAudioError(null);
@@ -76,9 +80,10 @@ export const CreatorVoiceStudioPage: React.FC = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioUrl = URL.createObjectURL(audioBlob);
 
-        saveCreatorRecording(currentKey, audioUrl, recordingTime || 5);
+       
+            setPendingAudioUrl(audioUrl);
 
-        setSuccessToast(`Recorded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Saved to Live Simulator.`);
+            setSuccessToast(`Recorded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Please save.`);
         setTimeout(() => setSuccessToast(null), 4000);
 
         // Stop media tracks
@@ -118,8 +123,8 @@ export const CreatorVoiceStudioPage: React.FC = () => {
     if (!file) return;
 
     const audioUrl = URL.createObjectURL(file);
-    saveCreatorRecording(currentKey, audioUrl, 6);
-    setSuccessToast(`Uploaded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Active in Live Simulator.`);
+    setPendingAudioUrl(audioUrl);
+    setSuccessToast(`Uploaded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Please save.`);
     setTimeout(() => setSuccessToast(null), 4000);
   };
 
@@ -148,6 +153,13 @@ export const CreatorVoiceStudioPage: React.FC = () => {
     setTimeout(() => setSuccessToast(null), 3000);
   };
 
+   const savePendingAudio = () => {
+    if (!pendingAudioUrl) return;
+    saveCreatorRecording(currentKey, pendingAudioUrl, recordingTime || 6);
+    setPendingAudioUrl(null);
+    setSuccessToast(`Saved ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Active in Live Simulator.`);
+    setTimeout(() => setSuccessToast(null), 4000);
+  };
   const handleAddNewPrompt = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newScriptEn.trim()) return;
@@ -566,8 +578,27 @@ export const CreatorVoiceStudioPage: React.FC = () => {
               <span>Upload Audio</span>
             </button>
 
-            {currentRecording && !isRecording && (
+        {(currentRecording || pendingAudioUrl) && !isRecording && (
               <div className="flex items-center gap-2 w-full sm:w-auto">
+                {pendingAudioUrl ? (
+                  <>
+                    <button
+                      onClick={savePendingAudio}
+                      className="flex-1 sm:flex-none px-5 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Save Recording</span>
+                    </button>
+                    <button
+                      onClick={() => setPendingAudioUrl(null)}
+                      className="px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-rose-950 text-rose-300 border border-slate-700 hover:border-rose-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Delete</span>
+                    </button>
+                     </>
+            ) : (
+              <>
                 <button
                   onClick={playRecordedAudio}
                   disabled={isPlayingAudio}
@@ -579,11 +610,13 @@ export const CreatorVoiceStudioPage: React.FC = () => {
                 <button
                   onClick={deleteCurrentRecording}
                   className="px-4 py-3.5 rounded-2xl bg-slate-800 hover:bg-rose-950 text-rose-300 border border-slate-700 hover:border-rose-700 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
-                  title="Delete this recording"
+                
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>Delete</span>
                 </button>
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -130,15 +130,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       url,
       duration,
       time,
-      creatorId: auth.currentUser?.uid,
+      creatorId: auth.currentUser?.uid || 'guest',
       timestamp: Date.now(),
     };
     try {
+       console.log('saveCreatorRecording: key=', key, 'url=', url);
       await setDoc(doc(db, 'creatorRecordings', key), recordingData);
       setCreatorRecordings(prev => ({
         ...prev,
         [key]: { url, duration, time },
       }));
+      console.log('saveCreatorRecording: state updated');
     } catch (err) {
       console.error('Error saving recording:', err);
     }
