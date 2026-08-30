@@ -1,0 +1,23 @@
+{
+  "entities": {
+    "recording": {
+      "title": "Recording",
+      "description": "Custom voice recording by the creator",
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "description": "URL of the audio file" },
+        "duration": { "type": "number", "description": "Duration of the recording in seconds" },
+        "timestamp": { "type": "number", "description": "Creation timestamp" },
+        "type": { "type": "string", "description": "Type of recording: standard, senior, or beginner" },
+        "creatorId": { "type": "string", "description": "UID of the creator" }
+      },
+      "required": ["url", "duration", "timestamp", "type", "creatorId"]
+    }
+  },
+  "firestore": {
+    "/creatorRecordings/{recordingId}": {
+      "schema": { "$ref": "recording" },
+      "description": "Collection of creator recordings"
+    }
+  }
+}

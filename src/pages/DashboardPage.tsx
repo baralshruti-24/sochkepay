@@ -113,7 +113,7 @@ export const DashboardPage: React.FC = () => {
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
-            SochKe Pay is actively safeguarding your digital payments with contextual intelligence and local biometric verification.
+            {t.dashboard.safeguardDesc}
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -145,7 +145,7 @@ export const DashboardPage: React.FC = () => {
             mood="LOW"
             size="sm"
             showDialogue={true}
-            customMessage={`All systems safe, ${user.name.split(' ')[0]}!`}
+            customMessage={`${t.dashboard.allSystemsSafe}, ${user.name.split(' ')[0]}!`}
           />
         </div>
       </div>

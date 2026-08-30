@@ -207,7 +207,7 @@ export const Navbar: React.FC = () => {
                 aria-label="Navigation Menu"
               >
                 {isMenuOpen ? <X className="w-4 h-4 sm:w-4.5 sm:h-4.5" /> : <Menu className="w-4 h-4 sm:w-4.5 sm:h-4.5" />}
-                <span className="hidden md:inline">Menu</span>
+                <span className="hidden md:inline">{t.nav.menu}</span>
               </button>
 
               {/* Navigation Dropdown List */}
@@ -505,7 +505,7 @@ export const Navbar: React.FC = () => {
                 title="Log out of current profile"
               >
                 <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-600" />
-                <span className="hidden sm:inline">Log Out</span>
+                <span className="hidden sm:inline">{t.nav.logout}</span>
               </button>
             ) : (
               <button

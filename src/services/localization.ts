@@ -29,6 +29,7 @@ export interface TranslationDictionary {
     taalaLocked: string;
     emergencyLock: string;
     logout: string;
+    menu: string;
     loggedInAs: string;
     guestMode: string;
   };
@@ -43,6 +44,15 @@ export interface TranslationDictionary {
     problemTitle: string;
     problemDesc: string;
     howItWorksTitle: string;
+    protectsTitle: string;
+    fraudManipulation: string;
+    coachedTitle: string;
+    coachedDesc: string;
+    fakeRefundTitle: string;
+    fakeRefundDesc: string;
+    digitalArrestTitle: string;
+    digitalArrestDesc: string;
+    sochuGreeting: string;
     step1Title: string;
     step1Desc: string;
     step2Title: string;
@@ -77,6 +87,8 @@ export interface TranslationDictionary {
     actionTaala: string;
     taalaDesc: string;
     emptyHistory: string;
+    safeguardDesc: string;
+    allSystemsSafe: string;
   };
   pay: {
     title: string;
@@ -251,6 +263,43 @@ export interface TranslationDictionary {
     back: string;
     demoTag: string;
     rupees: string;
+    taalaLocked: string;
+    taalaLockedAlert: string;
+    emergencyLock: string;
+    logout: string;
+    loggedInAs: string;
+    guestMode: string;
+    registerAccount: string;
+    beginnerModeOn: string;
+    beginnerModeOff: string;
+    testAccountMismatch: string;
+    resetToVerified: string;
+    muleAccountTest: string;
+    accountMismatchNotice: string;
+    mismatchDesc1: string;
+    mismatchDesc2: string;
+    safeguardNotice: string;
+    guestModeAlert: string;
+    listenInVoice: string;
+    scanQrCode: string;
+    known: string;
+    flagged: string;
+    new: string;
+    baseline: string;
+    normal: string;
+    addNote: string;
+    activeCall: string;
+    screenShare: string;
+    nightTime: string;
+    appSwitching: string;
+    withinLimit: string;
+    exceedsLimit: string;
+    securityProtocol: string;
+    pinOnly: string;
+    pinExtraAuth: string;
+    pinMultiAuth: string;
+    allAuth: string;
+    safeSimulation: string;
   };
 }
 
@@ -284,6 +333,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       taalaLocked: 'Payments Locked',
       emergencyLock: '🔒 TAALA Lock',
       logout: 'Log Out',
+      menu: 'Menu',
       loggedInAs: 'Signed in as',
       guestMode: 'Guest Mode',
     },
@@ -298,13 +348,22 @@ export const translations: Record<Language, TranslationDictionary> = {
       problemTitle: 'The Problem: Social Engineering, Not System Hacks',
       problemDesc: 'Most payment scams do not break banking cryptography. Scammers trick users into sending money by impersonating officials, promising fake refunds, or rushing them over a phone call.',
       howItWorksTitle: 'How SochKe Pay Protects You In 4 Clear Questions',
-      step1Title: '1. What is happening?',
+      protectsTitle: 'How SochKe Protects You',
+      fraudManipulation: 'Fraudsters don\'t always hack the payment system. They manipulate the person using it.',
+      coachedTitle: 'Coached Over Call',
+      coachedDesc: 'Victims are kept on a phone call while being guided step-by-step into authorizing fraudulent transfers.',
+      fakeRefundTitle: 'Fake Refund Collects',
+      fakeRefundDesc: 'Scammers claim "accept this request to receive money" when it is actually a collect request draining funds.',
+      digitalArrestTitle: 'Digital Arrest Panic',
+      digitalArrestDesc: 'Imposters pretend to be CBI, Police, or Customs over video calls, demanding money to avoid arrest.',
+      sochuGreeting: 'Namaste! I am Sochu. Think before you pay!',
+      step1Title: 'What is happening?',
       step1Desc: 'We display transparent recipient identity, your payment history with them, and normal vs unusual amounts.',
-      step2Title: '2. Why could it be risky?',
+      step2Title: 'Why could it be risky?',
       step2Desc: 'We evaluate contextual signals like active calls, screen sharing, and timing rather than a single metric.',
-      step3Title: '3. What should I do now?',
+      step3Title: 'What should I do now?',
       step3Desc: 'We provide clear Hindi, English, and Odia voice guidance and adaptive friction with zero financial jargon.',
-      step4Title: '4. What did I learn?',
+      step4Title: 'What did I learn?',
       step4Desc: 'Micro-learning embedded right after payments teaches you UPI safety habits for a lifetime.',
       trustTitle: 'Our Privacy-First Architectural Promises',
       trust1: 'Device-Local Biometrics (No raw fingerprint hashes stored)',
@@ -332,6 +391,8 @@ export const translations: Record<Language, TranslationDictionary> = {
       actionTaala: 'Emergency Lock',
       taalaDesc: 'Temporarily freeze all outgoing payments if you suspect a scam.',
       emptyHistory: 'No payments yet. Try making a simulated payment above.',
+      safeguardDesc: 'SochKe Pay is actively safeguarding your digital payments with contextual intelligence and local biometric verification.',
+      allSystemsSafe: 'All systems safe',
     },
     pay: {
       title: 'Simulated UPI Payment',
@@ -506,6 +567,43 @@ export const translations: Record<Language, TranslationDictionary> = {
       back: 'Back',
       demoTag: 'Simulated Demo Data',
       rupees: '₹',
+      taalaLocked: 'Payments Locked',
+      taalaLockedAlert: 'Payments are locked via TAALA Emergency Lock. Please unlock first from Dashboard or Navbar.',
+      emergencyLock: '🔒 TAALA Lock',
+      logout: 'Log Out',
+      loggedInAs: 'Signed in as',
+      guestMode: 'Guest Mode',
+      registerAccount: 'Register Safety Identity',
+      beginnerModeOn: 'Senior Voice Active',
+      beginnerModeOff: 'Enable Voice Guide',
+      testAccountMismatch: 'Test Account Mismatch',
+      resetToVerified: 'Reset to Verified User',
+      muleAccountTest: '⚡ Test Foreign/Mule Account',
+      accountMismatchNotice: '⚠️ Account Identity Mismatch Notice',
+      mismatchDesc1: 'The payment source details',
+      mismatchDesc2: 'do not match your registered SochKe safety profile',
+      safeguardNotice: '🛡️ Safety Safeguard: This may indicate a device swap, guest access, or unauthorized attempt. Strict biometric authentication and guardian check are enforced.',
+      guestModeAlert: 'Operating in Guest Mode (Not Logged In).',
+      listenInVoice: '🔊 Listen in Voice',
+      scanQrCode: 'Scan UPI QR Code',
+      known: 'Known',
+      flagged: '⚠️ Flagged',
+      new: 'New',
+      baseline: 'Baseline avg: ₹2,800',
+      normal: 'Normal',
+      addNote: 'e.g. Refund processing / Groceries',
+      activeCall: 'Active Phone Call',
+      screenShare: 'Screen Share',
+      nightTime: '2:00 AM Night',
+      appSwitching: 'App Switching',
+      withinLimit: 'Within Limit',
+      exceedsLimit: '⚡ Exceeds Limit (Requires Approval)',
+      securityProtocol: 'Security Protocol:',
+      pinOnly: '🟢 1 Factor (PIN Only)',
+      pinExtraAuth: '🟡 2 Factors (PIN + 1 Extra Auth)',
+      pinMultiAuth: '🟠 3 Factors (PIN + Multi-Auth)',
+      allAuth: '🔴 4 Factors (Use All Auth Layers)',
+      safeSimulation: '🔒 Safe simulation environment • No actual bank account is debited',
     },
   },
   hi: {
@@ -537,6 +635,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       taalaLocked: 'पेमेंट लॉक है',
       emergencyLock: '🔒 ताला (आपातकालीन लॉक)',
       logout: 'लॉग आउट',
+      menu: 'सूची',
       loggedInAs: 'खाता',
       guestMode: 'अतिथि मोड',
     },
@@ -551,13 +650,22 @@ export const translations: Record<Language, TranslationDictionary> = {
       problemTitle: 'समस्या: सिस्टम हैक नहीं, मनोवैज्ञानिक धोखा',
       problemDesc: 'अधिकांश यूपीआई फ्रॉड बैंक की तकनीक तोड़कर नहीं होते। धोखेबाज खुद को अधिकारी बताकर या फोन कॉल पर डराकर पैसे ट्रांसफर करवाते हैं।',
       howItWorksTitle: 'सोचके Pay 4 सरल सवालों में आपकी रक्षा करता है',
-      step1Title: '१. क्या हो रहा है?',
+      protectsTitle: 'सोचके आपकी रक्षा कैसे करता है',
+      fraudManipulation: 'धोखेबाज़ हमेशा भुगतान प्रणाली को हैक नहीं करते हैं। वे इसका उपयोग करने वाले व्यक्ति को बरगलाते हैं।',
+      coachedTitle: 'कॉल पर निर्देश',
+      coachedDesc: 'पीड़ितों को फोन कॉल पर रखकर कदम-दर-कदम धोखाधड़ी वाले हस्तांतरणों को अधिकृत करने के लिए निर्देशित किया जाता है।',
+      fakeRefundTitle: 'नकली रिफंड का अनुरोध',
+      fakeRefundDesc: 'स्कैमर "पैसे प्राप्त करने के लिए इस अनुरोध को स्वीकार करें" का दावा करते हैं, जबकि वास्तव में यह पैसे निकालने का अनुरोध होता है।',
+      digitalArrestTitle: 'डिजिटल अरेस्ट का डर',
+      digitalArrestDesc: 'धोखेबाज़ वीडियो कॉल पर सीबीआई, पुलिस या सीमा शुल्क अधिकारी होने का नाटक करते हैं और गिरफ्तारी से बचने के लिए पैसे मांगते हैं।',
+      sochuGreeting: 'नमस्ते! मैं सोचू हूँ। पैसे भेजने से पहले सोचिए!',
+      step1Title: 'क्या हो रहा है?',
       step1Desc: 'हम पाने वाले की पूरी पहचान, आपका पुराना इतिहास और सामान्य भुगतान की तुलना स्पष्ट दिखाते हैं।',
-      step2Title: '२. इसमें क्या खतरा हो सकता है?',
+      step2Title: 'इसमें क्या खतरा हो सकता है?',
       step2Desc: 'हम सिर्फ स्कोर नहीं बताते, बल्कि कॉल पर होना, स्क्रीन शेयरिंग और समय जैसे संकेतों को परखते हैं।',
-      step3Title: '३. अब मुझे क्या करना चाहिए?',
+      step3Title: 'अब मुझे क्या करना चाहिए?',
       step3Desc: 'हिंदी और अंग्रेजी में साफ आवाज में चेतावनी और आसान कदम ताकि कोई आपको गुमराह न कर सके।',
-      step4Title: '४. इससे मैंने क्या सीखा?',
+      step4Title: 'इससे मैंने क्या सीखा?',
       step4Desc: 'हर पेमेंट के साथ छोटी-छोटी जरूरी सीख ताकि अगली बार आप खुद सुरक्षित फैसला ले सकें।',
       trustTitle: 'हमारी प्राइवेसी और सुरक्षा की पक्की गारंटी',
       trust1: 'डिवाइस-लोकल बायोमेट्रिक (आपका फिंगरप्रिंट कभी फोन से बाहर नहीं जाता)',
@@ -585,6 +693,8 @@ export const translations: Record<Language, TranslationDictionary> = {
       actionTaala: 'ताला (आपातकालीन लॉक)',
       taalaDesc: 'धोखे का शक होने पर तुरंत अपने सारे आउटगोइंग पेमेंट रोकें।',
       emptyHistory: 'अभी कोई लेन-देन नहीं है। ऊपर दिए गए बटन से सुरक्षित भुगतान का अभ्यास करें।',
+      safeguardDesc: 'सोचके Pay सक्रिय रूप से प्रासंगिक बुद्धिमत्ता और स्थानीय बायोमेट्रिक सत्यापन के साथ आपके डिजिटल भुगतानों को सुरक्षित कर रहा है।',
+      allSystemsSafe: 'सभी सिस्टम सुरक्षित हैं',
     },
     pay: {
       title: 'यूपीआई भुगतान सिमुलेटर',
@@ -759,6 +869,43 @@ export const translations: Record<Language, TranslationDictionary> = {
       back: 'पीछे जाएं',
       demoTag: 'सिम्युलेटेड डेमो डेटा',
       rupees: '₹',
+      taalaLocked: 'पेमेंट लॉक है',
+      taalaLockedAlert: 'भुगतान TAALA आपातकालीन लॉक के माध्यम से लॉक हैं। कृपया पहले डैशबोर्ड या नेविबार से अनलॉक करें।',
+      emergencyLock: '🔒 ताला (आपातकालीन लॉक)',
+      logout: 'लॉग आउट',
+      loggedInAs: 'खाता',
+      guestMode: 'अतिथि मोड',
+      registerAccount: 'सुरक्षा खाता पंजीकृत करें',
+      beginnerModeOn: 'सीनियर वॉयस सक्रिय',
+      beginnerModeOff: 'वॉयस गाइड सक्षम करें',
+      testAccountMismatch: 'टेस्ट अकाउंट मिसमैच',
+      resetToVerified: 'सत्यापित उपयोगकर्ता पर रीसेट करें',
+      muleAccountTest: '⚡ टेस्ट विदेशी/म्यूल अकाउंट',
+      accountMismatchNotice: '⚠️ खाता पहचान मिसमैच सूचना',
+      mismatchDesc1: 'भुगतान स्रोत विवरण',
+      mismatchDesc2: 'आपके पंजीकृत सोचके सुरक्षा प्रोफ़ाइल से मेल नहीं खाते',
+      safeguardNotice: '🛡️ सुरक्षा: यह डिवाइस स्वैप, अतिथि एक्सेस या अनधिकृत प्रयास का संकेत हो सकता है। सख्त बायोमेट्रिक प्रमाणीकरण और अभिभावक जांच लागू है।',
+      guestModeAlert: 'अतिथि मोड में चल रहा है (लॉग इन नहीं है)।',
+      listenInVoice: '🔊 आवाज़ में सुनें',
+      scanQrCode: 'यूपीआई क्यूआर कोड स्कैन करें',
+      known: 'ज्ञात',
+      flagged: '⚠️ फ्लैग किया गया',
+      new: 'नया',
+      baseline: 'बेसलाइन औसत: ₹2,800',
+      normal: 'सामान्य',
+      addNote: 'उदाहरण के लिए: रिफंड प्रोसेसिंग / किराने का सामान',
+      activeCall: 'सक्रिय फोन कॉल',
+      screenShare: 'स्क्रीन शेयर',
+      nightTime: '2:00 AM रात',
+      appSwitching: 'ऐप स्विचिंग',
+      withinLimit: 'सीमा के भीतर',
+      exceedsLimit: '⚡ सीमा से अधिक (अनुमोदन आवश्यक)',
+      securityProtocol: 'सुरक्षा प्रोटोकॉल:',
+      pinOnly: '🟢 1 फैक्टर (केवल पिन)',
+      pinExtraAuth: '🟡 2 फैक्टर (पिन + 1 अतिरिक्त प्रमाणीकरण)',
+      pinMultiAuth: '🟠 3 फैक्टर (पिन + मल्टी-प्रमाणीकरण)',
+      allAuth: '🔴 4 फैक्टर (सभी प्रमाणीकरण परतों का उपयोग करें)',
+      safeSimulation: '🔒 सुरक्षित सिमुलेशन वातावरण • कोई वास्तविक बैंक खाता डेबिट नहीं किया गया है',
     },
   },
   or: {
@@ -791,6 +938,7 @@ export const translations: Record<Language, TranslationDictionary> = {
       taalaLocked: 'ପେମେଣ୍ଟ ଲକ୍ ଅଛି',
       emergencyLock: '🔒 ତାଲା (Emergency Lock)',
       logout: 'ଲଗ୍ ଆଉଟ୍',
+      menu: 'ତାଲିକା',
       loggedInAs: 'ଖାତା',
       guestMode: 'ଅତିଥି ମୋଡ୍',
     },
@@ -805,13 +953,22 @@ export const translations: Record<Language, TranslationDictionary> = {
       problemTitle: 'ସମସ୍ୟା: ଡିଜିଟାଲ ଠକେଇ ଓ ମାନସିକ ଚାପ',
       problemDesc: 'ଠକମାନେ ଫୋନ୍ କଲ୍ ବା ମିଥ୍ୟା ପୁରସ୍କାରର ଲୋଭ ଦେଖାଇ ଟଙ୍କା ଟ୍ରାନ୍ସଫର କରାଇନିଅନ୍ତି।',
       howItWorksTitle: 'SochKe Pay ୪ଟି ସରଳ ପ୍ରଶ୍ନରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷା ଦିଏ',
-      step1Title: '୧. କଣ ଘଟୁଛି?',
+      protectsTitle: 'SochKe ଆପଣଙ୍କୁ କିପରି ସୁରକ୍ଷା ଦିଏ',
+      fraudManipulation: 'ଠକମାନେ ସବୁବେଳେ ପେମେଣ୍ଟ ସିଷ୍ଟମକୁ ହ୍ୟାକ୍ କରନ୍ତି ନାହିଁ। ସେମାନେ ବ୍ୟବହାରକାରୀଙ୍କୁ ପ୍ରଲୋଭିତ କରନ୍ତି।',
+      coachedTitle: 'କଲ୍ ମାଧ୍ୟମରେ ନିର୍ଦ୍‌ଦେଶ',
+      coachedDesc: 'ଅପରାଧୀମାନେ ପୀଡିତଙ୍କୁ ଫୋନ କଲରେ ରଖି ଧୀରେ ଧୀରେ ଟଙ୍କା ଟ୍ରାନ୍ସଫର୍ କରିବାକୁ ବାଧ୍ୟ କରନ୍ତି।',
+      fakeRefundTitle: 'ନକଲି ରିଫଣ୍ଡ ଅନୁରୋଧ',
+      fakeRefundDesc: 'ଠକମାନେ "ପଇସା ପାଇବା ପାଇଁ ଏହି ଅନୁରୋଧକୁ ଗ୍ରହଣ କରନ୍ତୁ" ବୋଲି କୁହନ୍ତି, କିନ୍ତୁ ଏହା ପ୍ରକୃତରେ ଖାତାରୁ ଟଙ୍କା କାଟିବା ପାଇଁ ଏକ ଅନୁରୋଧ ହୋଇଥାଏ।',
+      digitalArrestTitle: 'ଡିଜିଟାଲ୍ ଆରେଷ୍ଟ ଭୟ',
+      digitalArrestDesc: 'ଠକମାନେ ଭିଡିଓ କଲରେ ସିବିଆଇ, ପୋଲିସ୍ କିମ୍ବା କଷ୍ଟମ୍ସ ଅଧିକାରୀ ବୋଲି ନାଟକ କରି ଗିରଫରୁ ବଞ୍ଚିବା ପାଇଁ ଟଙ୍କା ମାଗନ୍ତି।',
+      sochuGreeting: 'ନମସ୍କାର! ମୁଁ ହେଉଛି ସୋଚୁ। ଟଙ୍କା ପଠାଇବା ପୂର୍ବରୁ ଭାବନ୍ତୁ!',
+      step1Title: 'କଣ ଘଟୁଛି?',
       step1Desc: 'ପ୍ରାପ୍ତକର୍ତ୍ତାଙ୍କ ସଠିକ୍ ପରିଚୟ ଏବଂ ପୂର୍ବ ଇତିହାସ ଦେଖାଯାଏ।',
-      step2Title: '୨. ଏଥିରେ କି ବିପଦ ଥାଇପାରେ?',
+      step2Title: 'ଏଥିରେ କି ବିପଦ ଥାଇପାରେ?',
       step2Desc: 'କଲ୍ ଚାଲିଥିବା, ସ୍କ୍ରିନ୍ ସେୟାରିଂ ଏବଂ ସମୟ ଆଦି ଯାଞ୍ଚ କରାଯାଏ।',
-      step3Title: '୩. ମୋତେ ବର୍ତ୍ତମାନ କଣ କରିବାକୁ ହେବ?',
+      step3Title: 'ମୋତେ ବର୍ତ୍ତମାନ କଣ କରିବାକୁ ହେବ?',
       step3Desc: 'ସ୍ପଷ୍ଟ ସ୍ୱର ଚେତାବନୀ ଏବଂ ସହଜ ପରାମର୍ଶ ମିଳେ।',
-      step4Title: '୪. ଏଥିରୁ ମୁଁ କଣ ଶିଖିଲି?',
+      step4Title: 'ଏଥିରୁ ମୁଁ କଣ ଶିଖିଲି?',
       step4Desc: 'ପ୍ରତିଟି କାରବାର ସହିତ ଜରୁରୀ ସୁରକ୍ଷା ନିୟମ ଶିଖନ୍ତୁ।',
       trustTitle: 'ଆମର ପ୍ରାଇଭେସି ଏବଂ ସୁରକ୍ଷା ପ୍ରତିବଦ୍ଧତା',
       trust1: 'ଡିଭାଇସ୍-ସ୍ଥାନୀୟ ବାୟୋମେଟ୍ରିକ୍ (ଫିଙ୍ଗରପ୍ରିଣ୍ଟ କେବେ ବାହାରକୁ ଯାଏ ନାହିଁ)',
@@ -839,6 +996,8 @@ export const translations: Record<Language, TranslationDictionary> = {
       actionTaala: 'ତାଲା (ଜରୁରୀକାଳୀନ ଲକ୍)',
       taalaDesc: 'ସନ୍ଦେହ ହେଲେ ତୁରନ୍ତ ସମସ୍ତ ପେମେଣ୍ଟ ବନ୍ଦ କରନ୍ତୁ।',
       emptyHistory: 'କୌଣସି କାରବାର ହୋଇନାହିଁ।',
+      safeguardDesc: 'SochKe Pay ସକ୍ରିୟ ଭାବରେ ପ୍ରସଙ୍ଗଗତ ବୁଦ୍ଧି ଏବଂ ସ୍ଥାନୀୟ ବାୟୋମେଟ୍ରିକ୍ ଯାଞ୍ଚ ସହିତ ଆପଣଙ୍କର ଡିଜିଟାଲ୍ ପେମେଣ୍ଟକୁ ସୁରକ୍ଷିତ ରଖୁଛି।',
+      allSystemsSafe: 'ସମସ୍ତ ସିଷ୍ଟମ ସୁରକ୍ଷିତ ଅଛି',
     },
     pay: {
       title: 'ସିମୁଲେଟେଡ୍ UPI ପେମେଣ୍ଟ',
@@ -1013,6 +1172,44 @@ export const translations: Record<Language, TranslationDictionary> = {
       back: 'ପଛକୁ ଯାଆନ୍ତୁ',
       demoTag: 'ସିମୁଲେଟେଡ୍ ଡେମୋ',
       rupees: '₹',
+      taalaLocked: 'ପେମେଣ୍ଟ ଲକ୍ ଅଛି',
+      taalaLockedAlert: 'ପେମେଣ୍ଟଗୁଡିକ TAALA ଜରୁରୀକାଳୀନ ଲକ୍ ମାଧ୍ୟମରେ ଲକ୍ ହୋଇଛି। ଦୟାକରି ଆଗେ ଡ୍ୟାସବୋର୍ଡ କିମ୍ବା ନେଭିବାର୍ ରୁ ଅନଲକ୍ କରନ୍ତୁ।',
+      emergencyLock: '🔒 ତାଲା (Emergency Lock)',
+      logout: 'ଲଗ୍ ଆଉଟ୍',
+      loggedInAs: 'ଖାତା',
+      guestMode: 'ଅତିଥି ମୋଡ୍',
+      registerAccount: 'ସୁରକ୍ଷା ଖାତା ପଞ୍ଜୀକରଣ କରନ୍ତୁ',
+      beginnerModeOn: 'ସିନିୟର ଭଏସ୍ ସକ୍ରିୟ',
+      beginnerModeOff: 'ଭଏସ୍ ଗାଇଡ୍ ସକ୍ରିୟ କରନ୍ତୁ',
+      testAccountMismatch: 'ଟେଷ୍ଟ ଆକାଉଣ୍ଟ ମିସମ୍ୟାଚ୍',
+      resetToVerified: 'ସତ୍ୟାପିତ ୟୁଜର୍ କୁ ରିସେଟ୍ କରନ୍ତୁ',
+      muleAccountTest: '⚡ ଟେଷ୍ଟ ବିଦେଶୀ/ମ୍ୟୁଲ୍ ଆକାଉଣ୍ଟ',
+      accountMismatchNotice: '⚠️ ଆକାଉଣ୍ଟ ପରିଚୟ ମିସମ୍ୟାଚ୍ ସୂଚନା',
+      mismatchDesc1: 'ପେମେଣ୍ଟ ଉତ୍ସ ବିବରଣୀ',
+      mismatchDesc2: 'ଆପଣଙ୍କର ପଞ୍ଜୀକୃତ SochKe ସୁରକ୍ଷା ପ୍ରୋଫାଇଲ୍ ସହିତ ମେଳ ଖାଉ ନାହିଁ',
+      safeguardNotice: '🛡️ ସୁରକ୍ଷା: ଏହା ଡିଭାଇସ୍ ସ୍ୱାପ୍, ଅତିଥି ପ୍ରବେଶ କିମ୍ବା ଅନଧିକୃତ ପ୍ରୟାସର ସଙ୍କେତ ହୋଇପାରେ। କଠୋର ବାୟୋମେଟ୍ରିକ୍ ପ୍ରମାଣୀକରଣ ଏବଂ ଅଭିଭାବକ ଯାଞ୍ଚ କାର୍ଯ୍ୟକାରୀ ହୋଇଛି।',
+      guestModeAlert: 'ଅତିଥି ମୋଡ୍ ରେ ଚାଲୁଛି (ଲଗ୍ ଇନ୍ ହୋଇନାହିଁ)।',
+      listenInVoice: '🔊 ସ୍ୱରରେ ଶୁଣନ୍ତୁ',
+      scanQrCode: 'UPI QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ',
+      known: 'ଜଣାଶୁଣା',
+      flagged: '⚠️ ଫ୍ଲାଗ୍ ହୋଇଛି',
+      new: 'ନୂଆ',
+      baseline: 'ବେସଲାଇନ୍ ହାରାହାରି: ₹୨,୮୦୦',
+      normal: 'ସାଧାରଣ',
+      addNote: 'ଉଦାହରଣ: ରିଫଣ୍ଡ ପ୍ରୋସେସିଂ / କିରାଣି ସାମଗ୍ରୀ',
+      activeCall: 'ସକ୍ରିୟ ଫୋନ୍ କଲ୍',
+      screenShare: 'ସ୍କ୍ରିନ୍ ସେୟାର୍',
+      nightTime: 'ରାତି ୨:୦୦',
+      appSwitching: 'ଆପ୍ ସୁଇଚିଂ',
+      withinLimit: 'ସୀମା ମଧ୍ୟରେ',
+      exceedsLimit: '⚡ ସୀମା ଅତିକ୍ରମ କଲା (ଅନୁମୋଦନ ଆବଶ୍ୟକ)',
+      securityProtocol: 'ସୁରକ୍ଷା ପ୍ରୋଟୋକଲ୍:',
+      pinOnly: '🟢 ୧ ଫ୍ୟାକ୍ଟର୍ (କେବଳ PIN)',
+      pinExtraAuth: '🟡 ୨ ଫ୍ୟାକ୍ଟର୍ (PIN + ୧ ଅତିରିକ୍ତ ପ୍ରମାଣୀକରଣ)',
+      pinMultiAuth: '🟠 ୩ ଫ୍ୟାକ୍ଟର୍ (PIN + ମଲ୍ଟି-ପ୍ରମାଣୀକରଣ)',
+      allAuth: '🔴 ୪ ଫ୍ୟାକ୍ଟର୍ (ସମସ୍ତ ପ୍ରମାଣୀକରଣ ସ୍ତର ବ୍ୟବହାର କରନ୍ତୁ)',
+      safeSimulation: '🔒 ସୁରକ୍ଷିତ ସିମୁଲେସନ୍ ପରିବେଶ • କୌଣସି ପ୍ରକୃତ ବ୍ୟାଙ୍କ ଆକାଉଣ୍ଟ ଡେବିଟ୍ ହୋଇନାହିଁ',
     },
   },
 };
+

@@ -480,6 +480,7 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
     }
   };
 
+  return(
  <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-start justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
       {/* Hidden canvas for video frame extraction */}
       <canvas ref={canvasRef} className="hidden" />
@@ -895,4 +896,6 @@ export const QrScannerModal: React.FC<QrScannerModalProps> = ({
         </div>
       </div>
     </div>
+  );
 };
+

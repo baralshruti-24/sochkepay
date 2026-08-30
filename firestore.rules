@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper: is creator (simple check, for robust solution we might use a collection)
+    function isCreator() {
+      return request.auth != null && request.auth.token.email == 'baralshruti24@gmail.com';
+    }
+
+    match /creatorRecordings/{recordingId} {
+      allow read: if true;
+      allow create: if isCreator() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isCreator() && request.resource.data.creatorId == request.auth.uid;
+      allow delete: if isCreator();
+    }
+  }
+}

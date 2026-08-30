@@ -18,148 +18,14 @@ import {
   Sparkles,
 } from 'lucide-react';
 
-export interface CreatorVoicePrompt {
-  id: string;
-  category: string;
-  scenarioTitle: string;
-  riskBadge: 'SPECIAL' | 'HIGH' | 'CRITICAL';
-  situationDesc: string;
-  scripts: {
-    en: string;
-    hi: string;
-    or: string;
-  };
-}
-
-export const INITIAL_CREATOR_PROMPTS: CreatorVoicePrompt[] = [
-  {
-    id: 'SCENARIO_REFUND_QR_SCAM',
-    category: 'QR Code & Refund Deception',
-    scenarioTitle: '🟠 Refund QR Code Scam',
-    riskBadge: 'HIGH',
-    situationDesc: 'Triggered when a merchant or caller sends a QR code claiming "Scan QR to receive your cashback / refund".',
-    scripts: {
-      en: 'Ruko and verify! Entering your UPI PIN sends money OUT, it never receives money or refunds. Do not scan QR codes to receive money.',
-      hi: 'रुकिए और ध्यान दें! यूपीआई पिन डालने से पैसे केवल कटते हैं, कभी रिफंड नहीं आता। पैसे पाने के लिए कभी भी क्यूआर कोड स्कैन मत कीजिए।',
-      or: 'ଅଟକନ୍ତୁ! UPI PIN ଦେଲେ ଟଙ୍କା କଟିଯାଏ, ରିଫଣ୍ଡ ମିଳେ ନାହିଁ। ଟଙ୍କା ପାଇବା ପାଇଁ QR କୋଡ୍ ସ୍କାନ କରନ୍ତୁ ନାହିଁ।',
-    },
-  },
-  {
-    id: 'SCENARIO_OLX_MARKETPLACE_SCAM',
-    category: 'Marketplace / Army Officer Fraud',
-    scenarioTitle: '🔴 OLX Army / Advance QR Scam',
-    riskBadge: 'CRITICAL',
-    situationDesc: 'Triggered when an unverified marketplace buyer claims to be an Army/CISF officer sending advance booking money via QR/collect request.',
-    scripts: {
-      en: 'Stop immediately! Severe fraud risk. Fake buyers posing as Army officers trick sellers into scanning QR codes. Do not approve this payment.',
-      hi: 'तुरंत रुकिए! गंभीर धोखाधड़ी का खतरा है। फौजी अफसर बनकर फर्जी खरीदार आपको पेमेंट रिक्वेस्ट भेज रहे हैं। इस पेमेंट को तुरंत रद्द करें।',
-      or: 'ତୁରନ୍ତ ଅଟକନ୍ତୁ! ଏହା ସମ୍ପୂର୍ଣ୍ଣ ଠକେଇ। ଆର୍ମି ଅଫିସର ନାମରେ ନକଲି ଗ୍ରାହକ ଆପଣଙ୍କୁ ଠକିବାକୁ ଚେଷ୍ଟା କରୁଛନ୍ତି। UPI PIN ଦିଅନ୍ତୁ ନାହିଁ।',
-    },
-  },
-  {
-    id: 'SCENARIO_FAMILY_IMPERSONATION_SCAM',
-    category: 'Family Impersonation / DP Cloned Mule',
-    scenarioTitle: '🔴 Family Impersonation / Emergency Bail Scam',
-    riskBadge: 'CRITICAL',
-    situationDesc: 'Triggered when someone on WhatsApp impersonates a daughter/son in distress from an unknown number demanding urgent bail or hospital money.',
-    scripts: {
-      en: 'Emergency Stop! Unknown account requesting urgent distress transfer. Call your family member on their original number before entering your PIN.',
-      hi: 'तुरंत रुकिए! परिवार के नाम पर अनजान नंबर से पैसे मांगे जा रहे हैं। पिन डालने से पहले अपने परिजन को उनके असली पुराने नंबर पर सीधे कॉल करें।',
-      or: 'ତୁରନ୍ତ ଅଟକନ୍ତୁ! ପରିବାର ନାମରେ ଅଜଣା ନମ୍ବରରୁ ଟଙ୍କା ମଗାଯାଉଛି। PIN ଦେବା ପୂର୍ବରୁ ସେମାନଙ୍କ ଅସଲି ନମ୍ବରରେ କଲ୍ କରନ୍ତୁ।',
-    },
-  },
-  {
-    id: 'SCENARIO_SIM_ELECTRICITY_DEACTIVATION',
-    category: 'Utility & SIM Disconnection Extortion',
-    scenarioTitle: '🔴 SIM / Electricity Deactivation Threat',
-    riskBadge: 'CRITICAL',
-    situationDesc: 'Triggered when victims are threatened with immediate power cutoff or SIM block unless they pay a small fee or install quick-support apps.',
-    scripts: {
-      en: 'Stop! Real electricity boards and telecom operators never send personal UPI IDs or threaten immediate disconnection. Cut the call now.',
-      hi: 'रुकिए! बिजली विभाग या सिम कंपनियां कभी पर्सनल यूपीआई पर पैसे नहीं मांगतीं। यह पूरी तरह से जबरन वसूली का फ्रॉड है। फोन काटें।',
-      or: 'ଅଟକନ୍ତୁ! ବିଦ୍ୟୁତ୍ ବିଭାଗ କିମ୍ବା ଟେଲିକମ୍ କମ୍ପାନୀ ବ୍ୟକ୍ତିଗତ UPI ରେ ଟଙ୍କା ମାଗନ୍ତି ନାହିଁ। ତୁରନ୍ତ ଫୋନ୍ କାଟନ୍ତୁ।',
-    },
-  },
-  {
-    id: 'WARN_FLAGGED_SCAMMER',
-    category: 'Civic Fraud Registry Scammer',
-    scenarioTitle: '🔴 Civic Fraud Registry Intercept',
-    riskBadge: 'CRITICAL',
-    situationDesc: 'Triggered when the recipient VPA is confirmed fraudulent in the Community Safety Watch Registry.',
-    scripts: {
-      en: 'Attention! This account is flagged in the Civic Fraud Registry. Do not enter your UPI PIN or you will lose your money. Cancel this transaction immediately.',
-      hi: 'सावधान! यह खाता धोखाधड़ी रजिस्ट्री में दर्ज है। अपना यूपीआई पिन कभी मत डालिए वरना आपके खाते से पैसे कट जाएंगे। इस पेमेंट को तुरंत रद्द करें।',
-      or: 'ସାବଧାନ! ଏହି ଆକାଉଣ୍ଟ ଠକେଇ ତାଲିକାରେ ଚିହ୍ନଟ ହୋଇଛି। ଆପଣଙ୍କ UPI PIN ଦିଅନ୍ତୁ ନାହିଁ। ଏହି କାରବାରକୁ ତୁରନ୍ତ ବାତିଲ କରନ୍ତୁ।',
-    },
-  },
-  {
-    id: 'SCENARIO_DIGITAL_ARREST_POLICE',
-    category: 'Fake Police / Digital Arrest',
-    scenarioTitle: '🔴 Digital Arrest & Fake Police Threat',
-    riskBadge: 'CRITICAL',
-    situationDesc: 'Triggered when scammers threaten arrest, customs seizure, or CBI/ED investigation over video call.',
-    scripts: {
-      en: 'Emergency Warning! Real police officers and judges NEVER demand money or penalties over WhatsApp or video calls. You cannot be arrested digitally. Cut the call now.',
-      hi: 'आपातकालीन चेतावनी! असली पुलिस या अदालत कभी फोन या व्हाट्सएप पर पैसे या जुर्माना नहीं मांगती। डिजिटल अरेस्ट पूरी तरह से फर्जी है। तुरंत कॉल काटें।',
-      or: 'ଜରୁରୀକାଳୀନ ଚେତାବନୀ! ପ୍ରକୃତ ପୋଲିସ କିମ୍ବା କୋର୍ଟ କେବେ ଫୋନରେ ଟଙ୍କା ମାଗନ୍ତି ନାହିଁ। ଡିଜିଟାଲ ଆରେଷ୍ଟ ସମ୍ପୂର୍ଣ୍ଣ ମିଥ୍ୟା। ତୁରନ୍ତ କଲ୍ କାଟନ୍ତୁ।',
-    },
-  },
-  {
-    id: 'SCENARIO_UPFRONT_LOAN_FEE',
-    category: 'Loan Processing Fee Fraud',
-    scenarioTitle: '🟠 Fake Loan Upfront Processing Fee',
-    riskBadge: 'HIGH',
-    situationDesc: 'Triggered when victim is promised an instant loan but asked to pay advance processing charges.',
-    scripts: {
-      en: 'Warning! Legitimate banks NEVER demand upfront processing fees via personal UPI before giving a loan. Genuine fees are deducted directly from loan disbursement.',
-      hi: 'सावधान! असली बैंक या वित्तीय संस्थाएं लोन देने से पहले कभी पर्सनल यूपीआई पर एडवांस फीस नहीं मांगतीं। लोन की फीस लोन राशि से ही कटती है। पैसे मत भेजिए।',
-      or: 'ସାବଧାନ! ପ୍ରକୃତ ବ୍ୟାଙ୍କ ଋଣ ଦେବା ପୂର୍ବରୁ ବ୍ୟକ୍ତିଗତ UPI ମାଧ୍ୟମରେ ଅଗ୍ରିମ ଫି ମାଗନ୍ତି ନାହିଁ। ଟଙ୍କା ପଠାନ୍ତୁ ନାହିଁ।',
-    },
-  },
-  {
-    id: 'SCENARIO_PAYING_FOR_REWARD',
-    category: 'Lottery & Cash Prize Scam',
-    scenarioTitle: '🔴 Lottery & Prize Advance Fee Scam',
-    riskBadge: 'CRITICAL',
-    situationDesc: 'Triggered when victim believes they won a lucky draw or cashback but must pay "processing tax".',
-    scripts: {
-      en: 'Stop! You never have to pay tax or advance fees to receive a genuine lottery or cashback prize. Any prize requiring a fee is one hundred percent a scam.',
-      hi: 'रुकिए! असली लॉटरी या इनाम पाने के लिए आपको कभी पहले टैक्स या फीस नहीं देनी पड़ती। इनाम पाने के लिए पैसे मांगना पूरी तरह से धोखा है।',
-      or: 'ଅଟକନ୍ତୁ! ପ୍ରକୃତ ପୁରସ୍କାର ପାଇବା ପାଇଁ ଆଗୁଆ ଟଙ୍କା କିମ୍ବା ଟ୍ୟାକ୍ସ ଦେବାକୁ ପଡ଼େ ନାହିଁ। ଏହା ସମ୍ପୂର୍ଣ୍ଣ ଠକେଇ।',
-    },
-  },
-  {
-    id: 'SCENARIO_HOSPITAL_EMERGENCY',
-    category: 'Emergency Medical Care (No Alarm Audio)',
-    scenarioTitle: '🔵 Hospital Verified Fast-Track',
-    riskBadge: 'SPECIAL',
-    situationDesc: 'Triggered during certified medical hospital payments. No stop-alarm audio will be played; only calm priority guidance.',
-    scripts: {
-      en: 'Hospital verified fast-track is active. Please confirm the hospital counter name and proceed safely for priority medical care.',
-      hi: 'अस्पताल वेरीफाइड फास्ट-ट्रैक सक्रिय है। कृपया अस्पताल का नाम और काउंटर जांचकर तुरंत सुरक्षित भुगतान करें।',
-      or: 'ଡାକ୍ତରଖାନା ଯାଞ୍ଚ ହୋଇଥିବା ଫାଷ୍ଟ-ଟ୍ରାକ୍ ସକ୍ରିୟ। ଡାକ୍ତରଖାନାର ନାମ ଯାଞ୍ଚ କରି ଶୀଘ୍ର ପେମେଣ୍ଟ କରନ୍ତୁ।',
-    },
-  },
-  {
-    id: 'SCENARIO_FAMILY_GENUINE_EMERGENCY',
-    category: 'Family Distress Safe Fast-Track (No Alarm Audio)',
-    scenarioTitle: '🔵 Genuine Family Emergency Fast-Track',
-    riskBadge: 'SPECIAL',
-    situationDesc: 'Triggered for verified emergency payments to known contacts. Alarm audio is suppressed.',
-    scripts: {
-      en: 'Family emergency fast-track active. Context verified. Please verify recipient details and proceed safely with priority checkout.',
-      hi: 'पारिवारिक आपातकाल फास्ट-ट्रैक सक्रिय है। कृपया विवरण जांचकर प्राथमिकता से सुरक्षित भुगतान करें।',
-      or: 'ପାରିବାରିକ ଜରୁରୀକାଳୀନ ଫାଷ୍ଟ-ଟ୍ରାକ୍ ସକ୍ରିୟ। ବିବରଣୀ ଯାଞ୍ଚ କରି ଶୀଘ୍ର ପେମେଣ୍ଟ କରନ୍ତୁ।',
-    },
-  },
-];
+import { INITIAL_CREATOR_PROMPTS } from '../data/voicePrompts';
+import { CreatorVoicePrompt } from '../data/voicePrompts';
 
 export const CreatorVoiceStudioPage: React.FC = () => {
   const { language, setLanguage, saveCreatorRecording, deleteCreatorRecording, creatorRecordings } = useApp();
 
   const [promptsList, setPromptsList] = useState<CreatorVoicePrompt[]>(INITIAL_CREATOR_PROMPTS);
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState<number>(0);
-  const [selectedLang, setSelectedLang] = useState<Language>('hi');
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordingTime, setRecordingTime] = useState<number>(0);
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
@@ -183,7 +49,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const currentScenario = promptsList[selectedScenarioIndex] || promptsList[0];
-  const currentKey = `${currentScenario?.id || 'SCENARIO_REFUND_QR_SCAM'}_${selectedLang}`;
+  const currentKey = `${currentScenario?.id || 'SCENARIO_REFUND_QR_SCAM'}_${language}`;
   const currentRecording = creatorRecordings ? creatorRecordings[currentKey] : undefined;
 
   // Start recording using browser MediaRecorder API
@@ -212,7 +78,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
 
         saveCreatorRecording(currentKey, audioUrl, recordingTime || 5);
 
-        setSuccessToast(`Recorded ${selectedLang.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Saved to Live Simulator.`);
+        setSuccessToast(`Recorded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Saved to Live Simulator.`);
         setTimeout(() => setSuccessToast(null), 4000);
 
         // Stop media tracks
@@ -253,7 +119,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
 
     const audioUrl = URL.createObjectURL(file);
     saveCreatorRecording(currentKey, audioUrl, 6);
-    setSuccessToast(`Uploaded ${selectedLang.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Active in Live Simulator.`);
+    setSuccessToast(`Uploaded ${language.toUpperCase()} audio for "${currentScenario.scenarioTitle}"! Active in Live Simulator.`);
     setTimeout(() => setSuccessToast(null), 4000);
   };
 
@@ -394,12 +260,12 @@ export const CreatorVoiceStudioPage: React.FC = () => {
             { code: 'or' as Language, label: 'Odia (ଓଡ଼ିଆ)', sub: 'Vernacular' },
             { code: 'en' as Language, label: 'English (Indian)', sub: 'Universal' },
           ].map((lang) => {
-            const isSelected = selectedLang === lang.code;
+            const isSelected = language === lang.code;
             const langCount = promptsList.filter((p) => creatorRecordings && creatorRecordings[`${p.id}_${lang.code}`]).length;
             return (
               <button
                 key={lang.code}
-                onClick={() => setSelectedLang(lang.code)}
+                onClick={() => setLanguage(lang.code)}
                 className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 border ${
                   isSelected
                     ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
@@ -552,8 +418,8 @@ export const CreatorVoiceStudioPage: React.FC = () => {
           <div className="space-y-2">
             {promptsList.map((sc, index) => {
               const isSelected = selectedScenarioIndex === index;
-              const hasAudio = !!(creatorRecordings && creatorRecordings[`${sc.id}_${selectedLang}`]);
-              const scriptText = sc.scripts[selectedLang] || sc.scripts.en || '';
+              const hasAudio = !!(creatorRecordings && creatorRecordings[`${sc.id}_${language}`]);
+              const scriptText = sc.scripts[language] || sc.scripts.en || '';
               return (
                 <button
                   key={sc.id}
@@ -612,7 +478,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black tracking-wider uppercase text-amber-400">
-                  Creator Teleprompter • {selectedLang.toUpperCase()} Mode
+                  Creator Teleprompter • {language.toUpperCase()} Mode
                 </span>
                 <span
                   className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
@@ -650,7 +516,7 @@ export const CreatorVoiceStudioPage: React.FC = () => {
               Read This Official Creator Script:
             </span>
             <p className="text-base sm:text-xl font-black text-white leading-relaxed tracking-normal font-sans">
-              "{currentScenario.scripts[selectedLang] || currentScenario.scripts.en}"
+              "{currentScenario.scripts[language] || currentScenario.scripts.en}"
             </p>
             <p className="text-[11px] text-amber-300/80 font-medium">
               💡 Creator Delivery Tip: Speak with a calm, firm, protective tone so elderly citizens and beginners immediately understand.
@@ -676,8 +542,8 @@ export const CreatorVoiceStudioPage: React.FC = () => {
                 <Mic className="w-5 h-5 text-white" />
                 <span>
                   {currentRecording
-                    ? `Re-record Creator Audio (${selectedLang.toUpperCase()})`
-                    : `Record Creator Voice (${selectedLang.toUpperCase()})`}
+                    ? `Re-record Creator Audio (${language.toUpperCase()})`
+                    : `Record Creator Voice (${language.toUpperCase()})`}
                 </span>
               </button>
             ) : (

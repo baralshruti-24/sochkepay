@@ -105,11 +105,7 @@ export const LandingPage: React.FC = () => {
                   mood="LOW"
                   size="lg"
                   showDialogue={true}
-                  customMessage={
-                    language === 'hi'
-                      ? 'नमस्ते! मैं सोचू हूँ। पैसे भेजने से पहले सोचिए!'
-                      : 'Namaste! I am Sochu. Think before you pay!'
-                  }
+                  customMessage={t.landing.sochuGreeting}
                   onMascotClick={() => navigateTo('pay')}
                 />
               </div>
@@ -118,7 +114,7 @@ export const LandingPage: React.FC = () => {
               <div className="w-full max-w-sm bg-white/95 backdrop-blur-md rounded-3xl p-5 border border-slate-200 shadow-xl space-y-3.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-                    How SochKe Protects You
+                    {t.landing.protectsTitle}
                   </span>
                   <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800">
                     Active
@@ -128,19 +124,19 @@ export const LandingPage: React.FC = () => {
                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
   <div className="px-3 py-2 rounded-xl bg-white border border-slate-200">
     <p className="text-sm font-bold text-slate-600">
-      1. Check the recipient and context
+      1. {t.landing.step1Title}
     </p>
   </div>
 
   <div className="px-3 py-2 rounded-xl bg-white border border-slate-200">
     <p className="text-sm font-bold text-slate-600">
-      2. Explain the risk before authorization
+      2. {t.landing.step2Title}
     </p>
   </div>
 
   <div className="px-3 py-2 rounded-xl bg-white border border-slate-200">
     <p className="text-sm font-bold text-slate-600">
-      3. Protect your decision
+      3. {t.landing.step3Title}
     </p>
   </div>
 </div>
@@ -159,7 +155,7 @@ export const LandingPage: React.FC = () => {
           </div>
 
           <h2 className="text-2xl sm:text-4xl font-black tracking-tight leading-snug">
-            "Fraudsters don't always hack the payment system. They manipulate the person using it."
+            "{t.landing.fraudManipulation}"
           </h2>
 
           <p className="text-slate-300 text-sm sm:text-base font-medium leading-relaxed max-w-2xl mx-auto">
@@ -168,21 +164,21 @@ export const LandingPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 text-left">
             <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 space-y-2">
-              <h4 className="font-bold text-sm text-amber-400">Coached Over Call</h4>
+              <h4 className="font-bold text-sm text-amber-400">{t.landing.coachedTitle}</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Victims are kept on a phone call while being guided step-by-step into authorizing fraudulent transfers.
+                {t.landing.coachedDesc}
               </p>
             </div>
             <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 space-y-2">
-              <h4 className="font-bold text-sm text-amber-400">Fake Refund Collects</h4>
+              <h4 className="font-bold text-sm text-amber-400">{t.landing.fakeRefundTitle}</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Scammers claim "accept this request to receive money" when it is actually a collect request draining funds.
+                {t.landing.fakeRefundDesc}
               </p>
             </div>
             <div className="bg-slate-800/80 p-5 rounded-2xl border border-slate-700/80 space-y-2">
-              <h4 className="font-bold text-sm text-amber-400">Digital Arrest Panic</h4>
+              <h4 className="font-bold text-sm text-amber-400">{t.landing.digitalArrestTitle}</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Imposters pretend to be CBI, Police, or Customs over video calls, demanding money to avoid arrest.
+                {t.landing.digitalArrestDesc}
               </p>
             </div>
           </div>

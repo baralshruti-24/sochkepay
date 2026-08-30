@@ -1,5 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  setDoc,
+  query,
+} from 'firebase/firestore';
+import { db, auth } from '../services/firebase';
+import {
   UserProfile,
   Language,
   Transaction,
@@ -73,6 +83,7 @@ interface AppContextType {
   creatorRecordings: Record<string, { url: string; duration: number; time: string }>;
   saveCreatorRecording: (key: string, url: string, duration: number) => void;
   deleteCreatorRecording: (key: string) => void;
+  isSeniorMode: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -92,27 +103,58 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     audioSpeech.setSpeakingListener(setIsAudioSpeaking);
+    // Fetch recordings from Firestore
+    const fetchRecordings = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'creatorRecordings'));
+        const recordings: Record<string, { url: string; duration: number; time: string }> = {};
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          recordings[doc.id] = {
+            url: data.url,
+            duration: data.duration,
+            time: data.time,
+          };
+        });
+        setCreatorRecordings(recordings);
+      } catch (err) {
+        console.error('Error fetching recordings:', err);
+      }
+    };
+    fetchRecordings();
   }, []);
 
-  const saveCreatorRecording = (key: string, url: string, duration: number) => {
-    setCreatorRecordings(prev => ({
-      ...prev,
-      [key]: {
-        url,
-        duration,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      },
-    }));
+  const saveCreatorRecording = async (key: string, url: string, duration: number) => {
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const recordingData = {
+      url,
+      duration,
+      time,
+      creatorId: auth.currentUser?.uid,
+      timestamp: Date.now(),
+    };
+    try {
+      await setDoc(doc(db, 'creatorRecordings', key), recordingData);
+      setCreatorRecordings(prev => ({
+        ...prev,
+        [key]: { url, duration, time },
+      }));
+    } catch (err) {
+      console.error('Error saving recording:', err);
+    }
   };
 
-  const deleteCreatorRecording = (key: string) => {
-    const recording = creatorRecordings[key];
-    if (recording?.url.startsWith('blob:')) URL.revokeObjectURL(recording.url);
-    setCreatorRecordings(prev => {
-      const next = { ...prev };
-      delete next[key];
-      return next;
-    });
+  const deleteCreatorRecording = async (key: string) => {
+    try {
+      await deleteDoc(doc(db, 'creatorRecordings', key));
+      setCreatorRecordings(prev => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    } catch (err) {
+      console.error('Error deleting recording:', err);
+    }
   };
 
   const setLanguage = (lang: Language) => {
@@ -239,25 +281,30 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         audio.onended = () => setIsAudioSpeaking(false);
         audio.onerror = () => {
           setIsAudioSpeaking(false);
-          const fallbackText = customScript || activeRiskAssessment.voiceScript[language] || activeRiskAssessment.voiceScript.en;
-          audioSpeech.speak(fallbackText, language);
         };
         audio.play().catch(() => {
           if (activeAudioPlayerRef.current === audio) {
             activeAudioPlayerRef.current = null;
           }
-          const fallbackText = customScript || activeRiskAssessment.voiceScript[language] || activeRiskAssessment.voiceScript.en;
-          audioSpeech.speak(fallbackText, language);
+          setIsAudioSpeaking(false);
         });
-        return;
+        return; // Ensure we don't fall back to synthesis
       } catch (err) {
-        console.warn('Creator audio playback error, falling back to synthesis:', err);
+        console.warn('Creator audio playback error:', err);
+        return; // Ensure we don't fall back to synthesis
       }
+    }
+
+    // Odia requirement: No fallback to synthesis
+    if (language === 'or') {
+        return;
     }
 
     const textToSpeak = customScript || activeRiskAssessment.voiceScript[language] || activeRiskAssessment.voiceScript.en;
     audioSpeech.speak(textToSpeak, language);
   };
+
+  const isSeniorMode = user.ageRange === '60+' || !!user.beginnerGuideMode;
 
   const stopVoiceWarning = () => {
     if (activeAudioPlayerRef.current) {
@@ -406,6 +453,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         creatorRecordings,
         saveCreatorRecording,
         deleteCreatorRecording,
+        isSeniorMode,
       }}
     >
       {children}

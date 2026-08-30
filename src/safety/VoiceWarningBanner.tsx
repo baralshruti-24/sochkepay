@@ -27,7 +27,13 @@ export const VoiceWarningBanner: React.FC<VoiceWarningBannerProps> = ({ autoPlay
 
   useEffect(() => {
     const warningKey = `${activeRiskAssessment.riskLevel}:${activeRiskAssessment.riskScore}:${language}`;
-    if (autoPlay && (isCritical || isHigh) && !isEmergency && autoPlayedKey.current !== warningKey) {
+    if (
+      autoPlay && 
+      (isCritical || isHigh) && 
+      !isEmergency && 
+      autoPlayedKey.current !== warningKey &&
+      !isAudioSpeaking // Check if audio is already playing
+    ) {
       autoPlayedKey.current = warningKey;
       // Gentle delayed speech to let user see the screen first
       const timer = setTimeout(() => {
@@ -36,7 +42,7 @@ export const VoiceWarningBanner: React.FC<VoiceWarningBannerProps> = ({ autoPlay
       return () => clearTimeout(timer);
     }
     return undefined;
-  }, [autoPlay, isCritical, isHigh, isEmergency, activeRiskAssessment.riskLevel, activeRiskAssessment.riskScore, language, playVoiceWarning]);
+  }, [autoPlay, isCritical, isHigh, isEmergency, activeRiskAssessment.riskLevel, activeRiskAssessment.riskScore, language, playVoiceWarning, isAudioSpeaking]);
 
   return (
     <div

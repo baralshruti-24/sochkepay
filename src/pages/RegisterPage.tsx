@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { AgeRange, Language, UserProfile, BiometricEnrollmentDetails } from '../types';
 import { familiarImageOptions } from '../data/mockData';
+import { INITIAL_CREATOR_PROMPTS } from '../data/voicePrompts';
 import { checkMuleBiometrics, FLAGGED_MULE_DATABASE, FlaggedMuleRecord } from '../services/muleRegistry';
 import { SochuMascot } from '../mascot/SochuMascot';
 import {
@@ -432,7 +433,32 @@ const REGISTER_TRANSLATIONS: Record<Language, LocalizedStrings> = {
 };
 
 export const RegisterPage: React.FC = () => {
-  const { user, setUser, language, setLanguage, navigateTo, playVoiceWarning } = useApp();
+  const { user, setUser, language, setLanguage, navigateTo, playVoiceWarning, isSeniorMode: globalIsSeniorMode } = useApp();
+  
+  const playGuideAudio = (promptId: string) => {
+    const prompt = INITIAL_CREATOR_PROMPTS.find(p => p.id === promptId);
+    if (prompt) {
+       playVoiceWarning(prompt.scripts[language] || prompt.scripts.en);
+    }
+  }
+  
+  const startVoiceInput = (onResult: (text: string) => void) => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("Voice input not supported.");
+        return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = language === 'hi' ? 'hi-IN' : 'en-IN';
+    recognition.onresult = (event: any) => {
+      onResult(event.results[0][0].transcript);
+    };
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      alert("Voice input failed. Please try again.");
+    };
+    recognition.start();
+  };
 
   // Active registration language matches global or locally selected
   const [preferredLang, setPreferredLang] = useState<Language>(language || user.preferredLanguage || 'hi');
@@ -447,6 +473,11 @@ export const RegisterPage: React.FC = () => {
   const [isBeginnerGuideMode, setIsBeginnerGuideMode] = useState<boolean>(
     !!user.beginnerGuideMode || user.ageRange === '60+'
   );
+  const [isSeniorMode, setIsSeniorMode] = useState<boolean>(ageRange === '60+' || isBeginnerGuideMode);
+  useEffect(() => {
+    setIsSeniorMode(ageRange === '60+' || isBeginnerGuideMode);
+  }, [ageRange, isBeginnerGuideMode]);
+
   const seniorVoiceGuide = (ageRange === '60+' || isBeginnerGuideMode)
     ? `${loc.seniorGuideBody} ${currentStep === 1 ? loc.step1Sub : currentStep === 2 ? loc.step2Sub : loc.step3Sub}`
     : '';
@@ -806,7 +837,7 @@ export const RegisterPage: React.FC = () => {
             <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-2xl leading-relaxed">
               {loc.subtitle}
             </p>
-            {ageRange === '60+' && (
+            {isSeniorMode && (
               <button
                 type="button"
                 onClick={() => playVoiceWarning(seniorVoiceGuide)}
@@ -987,13 +1018,35 @@ export const RegisterPage: React.FC = () => {
                 <User className="w-3.5 h-3.5 text-slate-400" />
                 <span>{loc.fullNameLabel}</span>
               </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={loc.fullNamePlaceholder}
-                className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-slate-50/50"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={loc.fullNamePlaceholder}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-hidden focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-slate-50/50"
+                />
+                {isSeniorMode && (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => playGuideAudio('GUIDE_REGISTRATION_NAME')}
+                      className="p-3 bg-sky-100 text-sky-700 rounded-xl"
+                      title="Listen to name guide"
+                    >
+                      <Volume2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => startVoiceInput(setName)}
+                      className="p-3 bg-amber-100 text-amber-700 rounded-xl"
+                      title="Speak your name"
+                    >
+                      <Mic className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Mobile Number with SIM binding check */}
@@ -1002,6 +1055,15 @@ export const RegisterPage: React.FC = () => {
                 <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5 text-slate-400" />
                   <span>{loc.mobileLabel}</span>
+                  {isSeniorMode && (
+                    <button
+                      type="button"
+                      onClick={() => playGuideAudio('GUIDE_REGISTRATION_MOBILE')}
+                      className="p-1 text-slate-500 hover:text-sky-600"
+                    >
+                      <Volume2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </label>
                 <span className="text-[10px] font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
                   {loc.mobileSub}
@@ -1027,7 +1089,7 @@ export const RegisterPage: React.FC = () => {
                   <Users className="w-3.5 h-3.5 text-slate-400" />
                   <span>{loc.ageRangeLabel}</span>
                 </label>
-                {ageRange === '60+' && (
+                {isSeniorMode && (
                   <span className="text-[10px] font-black text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full animate-pulse">
                     {loc.seniorShieldActive}
                   </span>
@@ -1090,13 +1152,22 @@ export const RegisterPage: React.FC = () => {
                 </label>
               </div>
             </div>
-
+            
             {/* Email Address (Optional) */}
             <div className="space-y-2 md:col-span-2">
               <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-slate-400" />
                   <span>{loc.emailLabel}</span>
+                  {isSeniorMode && (
+                    <button
+                      type="button"
+                      onClick={() => playGuideAudio('GUIDE_REGISTRATION_EMAIL')}
+                      className="p-1 text-slate-500 hover:text-sky-600"
+                    >
+                      <Volume2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </span>
                 <span className="text-[10px] text-slate-400 font-semibold">{loc.emailOptional}</span>
               </label>
@@ -1160,6 +1231,16 @@ export const RegisterPage: React.FC = () => {
 
               {/* Camera Scanner Simulation */}
               <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden flex flex-col items-center justify-center text-white border border-slate-800">
+                {isSeniorMode && (
+                  <button
+                    type="button"
+                    onClick={() => playGuideAudio('GUIDE_STEP2_FACE')}
+                    className="absolute top-2 right-2 p-2 bg-amber-500/20 text-amber-300 rounded-lg backdrop-blur-sm"
+                    title="Listen to face guide"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                )}
                 {isScanningFace ? (
                   <div className="space-y-3 text-center z-10 px-4">
                     <div className="w-16 h-20 rounded-full border-2 border-dashed border-amber-400 mx-auto animate-pulse flex items-center justify-center">
@@ -1220,7 +1301,17 @@ export const RegisterPage: React.FC = () => {
               </div>
 
               {/* Spoken script card */}
-              <div className="bg-white rounded-xl p-4 border border-slate-200 text-center space-y-2">
+              <div className="bg-white rounded-xl p-4 border border-slate-200 text-center space-y-2 relative">
+                {isSeniorMode && (
+                  <button
+                    type="button"
+                    onClick={() => playGuideAudio('GUIDE_STEP2_VOICE')}
+                    className="absolute top-2 right-2 p-2 bg-amber-100 text-amber-700 rounded-lg"
+                    title="Listen to voice guide"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                )}
                 <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
                   {loc.voicePromptLabel}
                 </p>
@@ -1265,6 +1356,16 @@ export const RegisterPage: React.FC = () => {
                     <p className="text-[11px] text-slate-500">{loc.familiarSub}</p>
                   </div>
                 </div>
+                {isSeniorMode && (
+                  <button
+                    type="button"
+                    onClick={() => playGuideAudio('GUIDE_STEP2_FAMILIAR')}
+                    className="p-2 bg-indigo-100 text-indigo-700 rounded-lg"
+                    title="Listen to familiar picture guide"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                )}
                 <span className="text-[11px] font-bold text-indigo-900 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-lg">
                   {loc.familiarSelected} {familiarImageOptions.find((o) => o.id === selectedFamiliarImage)?.nameKey}
                 </span>
@@ -1324,7 +1425,7 @@ export const RegisterPage: React.FC = () => {
                   </div>
                   <div>
 
-                  {ageRange === '60+' && (
+                  {isSeniorMode && (
                     <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 space-y-2">
                       <div className="flex items-center gap-2">
                         <Volume2 className="w-4 h-4 text-amber-700" />
@@ -1405,7 +1506,18 @@ export const RegisterPage: React.FC = () => {
             {/* Daily Comfort Threshold */}
             <div className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-200">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-800">{loc.dailyLimitLabel}</label>
+                <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                {loc.dailyLimitLabel}
+                {isSeniorMode && (
+                  <button
+                    type="button"
+                    onClick={() => playGuideAudio('GUIDE_REGISTRATION_DAILY_LIMIT')}
+                    className="p-1 text-slate-500 hover:text-sky-600"
+                  >
+                    <Volume2 className="w-4 h-4" />
+                  </button>
+                )}
+              </label>
                 <span className="text-sm font-black text-sky-700">₹{dailyLimit.toLocaleString('en-IN')}</span>
               </div>
               <p className="text-[11px] text-slate-500">{loc.dailyLimitSub}</p>
@@ -1431,6 +1543,15 @@ export const RegisterPage: React.FC = () => {
                 <label className="text-xs font-bold text-rose-950 flex items-center gap-1.5">
                   <Lock className="w-3.5 h-3.5 text-rose-600" />
                   <span>{loc.taalaPinLabel}</span>
+                  {isSeniorMode && (
+                    <button
+                      type="button"
+                      onClick={() => playGuideAudio('GUIDE_REGISTRATION_TAALA_PIN')}
+                      className="p-1 text-rose-700 hover:text-rose-900"
+                    >
+                      <Volume2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </label>
                 <span className="text-[10px] font-black text-rose-700 bg-rose-100 px-2 py-0.5 rounded-md">
                   Hold-to-Lock Master Key

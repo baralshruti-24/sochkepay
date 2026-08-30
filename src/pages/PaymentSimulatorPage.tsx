@@ -54,6 +54,7 @@ export const PaymentSimulatorPage: React.FC = () => {
     pendingGuardianTransaction,
     approveGuardianTransaction,
     rejectGuardianTransaction,
+    playVoiceWarning,
     isTaalaLocked,
     user,
     language,
@@ -72,6 +73,19 @@ export const PaymentSimulatorPage: React.FC = () => {
   const [payerName, setPayerName] = useState<string>(user.name);
   const [payerPhone, setPayerPhone] = useState<string>(user.phoneMasked);
   const [isEditingSender, setIsEditingSender] = useState<boolean>(false);
+
+  // Audio state tracking to prevent duplicate plays
+  const audioPlayedForScenario = React.useRef<string | null>(null);
+
+  useEffect(() => {
+    if (activeScenarioId && audioPlayedForScenario.current !== activeScenarioId) {
+      const sc = demoScenarios.find(s => s.id === activeScenarioId);
+      if (sc && (sc.expectedRisk === 'HIGH' || sc.expectedRisk === 'CRITICAL')) {
+         playVoiceWarning();
+         audioPlayedForScenario.current = activeScenarioId;
+      }
+    }
+  }, [activeScenarioId, playVoiceWarning]);
 
   useEffect(() => {
     setPayerName(user.name);
