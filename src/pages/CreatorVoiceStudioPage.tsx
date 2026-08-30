@@ -600,7 +600,15 @@ export const CreatorVoiceStudioPage: React.FC = () => {
             ) : (
               <>
                 <button
-                  onClick={playRecordedAudio}
+                  onClick={() => {
+                        if (audioPlayerRef.current) audioPlayerRef.current.pause();
+                        const audio = new Audio(currentRecording?.url);
+                        audioPlayerRef.current = audio;
+                        setIsPlayingAudio(true);
+                        audio.onended = () => setIsPlayingAudio(false);
+                        audio.onerror = () => setIsPlayingAudio(false);
+                        audio.play();
+                      }}
                   disabled={isPlayingAudio}
                   className="flex-1 sm:flex-none px-5 py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95"
                 >

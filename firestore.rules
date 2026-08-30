@@ -8,8 +8,8 @@ service cloud.firestore {
 
     match /creatorRecordings/{recordingId} {
       allow read: if true;
-      allow create: if isCreator() && request.resource.data.creatorId == request.auth.uid;
-      allow update: if isCreator() && request.resource.data.creatorId == request.auth.uid;
+       allow create: if isCreator();
+      allow update: if isCreator();
       allow delete: if isCreator();
     }
   }

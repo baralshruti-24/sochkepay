@@ -37,7 +37,17 @@ export const AuthVerificationModal: React.FC<AuthVerificationModalProps> = ({
   onSuccess,
   onCancel,
 }) => {
-  const { t, user, language, activeRiskAssessment } = useApp();
+   const { t, user, language, activeRiskAssessment, playVoiceWarning, stopVoiceWarning } = useApp();
+
+  useEffect(() => {
+    // Stop any currently playing audio from the previous step
+    stopVoiceWarning();
+    // Play the user's custom recording on the verify and pay stage
+    playVoiceWarning(undefined, 'custom_only');
+    return () => {
+      stopVoiceWarning();
+    };
+  }, [playVoiceWarning, stopVoiceWarning]);
 
   // Determine effective risk tier (default to active risk assessment if not passed)
   const effectiveRiskLevel: RiskLevel = propRiskLevel || activeRiskAssessment.riskLevel;

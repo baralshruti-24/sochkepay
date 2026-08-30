@@ -2,13 +2,12 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
   collection,
   getDocs,
-  addDoc,
   deleteDoc,
   doc,
   setDoc,
-  query,
 } from 'firebase/firestore';
-import { db, auth } from '../services/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, auth, storage } from '../services/firebase';
 import {
   UserProfile,
   Language,
@@ -78,10 +77,10 @@ interface AppContextType {
 
   // Audio Speech & Creator Voice Recordings
   isAudioSpeaking: boolean;
-  playVoiceWarning: (customScript?: string) => void;
+  playVoiceWarning: (customScript?: string, playMode?: 'generic_only' | 'custom_only' | 'default') => void;
   stopVoiceWarning: () => void;
   creatorRecordings: Record<string, { url: string; duration: number; time: string }>;
-  saveCreatorRecording: (key: string, url: string, duration: number) => void;
+ saveCreatorRecording: (key: string, blob: Blob, duration: number) => void;
   deleteCreatorRecording: (key: string) => void;
   isSeniorMode: boolean;
 }
@@ -116,16 +115,82 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             time: data.time,
           };
         });
+          // Merge with local storage recordings as a robust offline/local fallback
+        for (let i = 0; i < localStorage.length; i++) {
+          const localKey = localStorage.key(i);
+          if (localKey && localKey.startsWith('sochke_voice_')) {
+            const key = localKey.replace('sochke_voice_', '');
+            try {
+              const localData = JSON.parse(localStorage.getItem(localKey) || '{}');
+              if (localData.base64) {
+                recordings[key] = {
+                  url: localData.base64,
+                  duration: localData.duration,
+                  time: localData.time,
+                };
+              }
+            } catch (e) {
+              console.error('Error parsing local recording', e);
+            }
+          }
+        }
         setCreatorRecordings(recordings);
       } catch (err) {
         console.error('Error fetching recordings:', err);
+         // Fallback: load only from localStorage if Firestore fails
+        const recordings: Record<string, { url: string; duration: number; time: string }> = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const localKey = localStorage.key(i);
+          if (localKey && localKey.startsWith('sochke_voice_')) {
+            const key = localKey.replace('sochke_voice_', '');
+            try {
+              const localData = JSON.parse(localStorage.getItem(localKey) || '{}');
+              if (localData.base64) {
+                recordings[key] = {
+                  url: localData.base64,
+                  duration: localData.duration,
+                  time: localData.time,
+                };
+              }
+            } catch (e) {
+              console.error('Error parsing local recording', e);
+            }
+              }
+        }
+        setCreatorRecordings(recordings);
       }
     };
     fetchRecordings();
   }, []);
 
-  const saveCreatorRecording = async (key: string, url: string, duration: number) => {
+  const saveCreatorRecording = async (key: string, blob: Blob, duration: number) => {
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+     // Always save to localStorage first as a guaranteed fast local fallback
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      localStorage.setItem(`sochke_voice_${key}`, JSON.stringify({ base64, duration, time }));
+      
+      // Update local state immediately with base64 url
+      setCreatorRecordings(prev => ({
+        ...prev,
+        [key]: { url: base64, duration, time },
+      }));
+      console.log('Successfully saved recording to localStorage fallback:', key);
+    } catch (localErr) {
+      console.error('Failed to save to local storage:', localErr);
+    }
+
+    // Then attempt Firebase upload in background
+    try {
+      console.log('saveCreatorRecording: uploading blob for key=', key);
+      const storageRef = ref(storage, `recordings/${key}`);
+      await uploadBytes(storageRef, blob);
+      const url = await getDownloadURL(storageRef);
     const recordingData = {
       url,
       duration,
@@ -133,29 +198,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       creatorId: auth.currentUser?.uid || 'guest',
       timestamp: Date.now(),
     };
-    try {
-       console.log('saveCreatorRecording: key=', key, 'url=', url);
+    
       await setDoc(doc(db, 'creatorRecordings', key), recordingData);
+      // Update state with cloud URL (preferred)
       setCreatorRecordings(prev => ({
         ...prev,
         [key]: { url, duration, time },
       }));
-      console.log('saveCreatorRecording: state updated');
+      console.log('saveCreatorRecording: state updated with Cloud URL', url);
     } catch (err) {
-      console.error('Error saving recording:', err);
+       console.warn('Error uploading recording to Firebase, using localStorage copy instead:', err);
     }
   };
 
   const deleteCreatorRecording = async (key: string) => {
-    try {
-      await deleteDoc(doc(db, 'creatorRecordings', key));
+     // Delete from localStorage
+    localStorage.removeItem(`sochke_voice_${key}`);
       setCreatorRecordings(prev => {
         const next = { ...prev };
         delete next[key];
         return next;
       });
+       // Attempt to delete from Firestore
+    try {
+      await deleteDoc(doc(db, 'creatorRecordings', key));
     } catch (err) {
-      console.error('Error deleting recording:', err);
+       console.warn('Error deleting recording from Firestore (already removed locally):', err);
     }
   };
 
@@ -267,12 +335,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const playVoiceWarning = (customScript?: string) => {
+ const playVoiceWarning = (
+    customScript?: string,
+    playMode: 'generic_only' | 'custom_only' | 'default' = 'default'
+  ) => {
     // Check if creator recorded custom audio for the active scenario or category
     const scenarioKey = `${activeScenarioId}_${language}`;
     const creatorAudio = creatorRecordings[scenarioKey];
+     let shouldPlayCustom = false;
 
     if (creatorAudio && creatorAudio.url) {
+       if (language === 'or') {
+        // For Odia, we ALWAYS play custom audio at both steps if it exists
+        shouldPlayCustom = true;
+      } else {
+        // For English & Hindi, check playMode
+        if (playMode === 'custom_only') {
+          shouldPlayCustom = true;
+        } else if (playMode === 'generic_only') {
+          shouldPlayCustom = false;
+        } else {
+          // default behavior
+          shouldPlayCustom = true;
+        }
+      }
+    }
+
+    if (shouldPlayCustom && creatorAudio && creatorAudio.url) {
       try {
         if (activeAudioPlayerRef.current) {
           activeAudioPlayerRef.current.pause();
